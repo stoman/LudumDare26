@@ -70,17 +70,25 @@ var levels;
 // state
 var readyToStart = false;
 
+// stats
+var stats = {
+    enemyHit : 0,
+    killsEnemy : 0,
+    killsWall : 0,
+    wallHit : 0
+};
+
 $(function() {
     // create level objects
     levels = [{// level 1
 	backgroundIndex : 0,
-	enemyAgilityBase : 0.05 - 0.05,
+	enemyAgilityBase : 0.05,
 	enemyAgilityRandom : 0.03,
 	enemySpeedBase : 5,
 	enemySpeedRandom : 1,
 	initialEnemies : 10,
-	penaltyWall : 3,
-	penaltyEnemy : 3,
+	penaltyWall : 1,
+	penaltyEnemy : 1,
 	playerAgility : 0.1,
 	playerSpeed : 4,
 	walls : [new Wall(0, 0, 15, 450),// left
@@ -134,6 +142,9 @@ $(function() {
     
     // load first level
     loadLevel();
+    
+    // stats
+    refreshStats();
 });
 
 function loadLevel() {
@@ -288,6 +299,9 @@ function update() {
     // player vs. enemy
     for( var i = enemies.length - 1; i >= 0; i--) {
 	if(enemies[i].collidesWith(player)) {
+	    // stats
+	    stats.enemyHit++;
+	    refreshStats();
 	    // play sound
 	    playSound('player_hit');
 	    // remove enemy
@@ -300,6 +314,9 @@ function update() {
     // player vs. wall
     for( var i = 0; i < levels[currentLevel].walls.length; i++) {
 	if(levels[currentLevel].walls[i].collidesWith(player)) {
+	    // stats
+	    stats.wallHit++;
+	    refreshStats();
 	    // play sound
 	    playSound('player_hit');
 	    // add explosion
@@ -320,17 +337,30 @@ function update() {
 	for( var j = 0; j < levels[currentLevel].walls.length; j++) {
 	    if(levels[currentLevel].walls[j].collidesWith(enemies[i])) {
 		if(-1 == $.inArray(i, deadEnemies)) {
+		    // stats
+		    stats.killsWall++;
+		    
+		    // kill enemy
 		    deadEnemies.push(i);
 		}
 	    }
 	}
+	
 	// between enemies
 	for( var j = i + 1; j < enemies.length; j++) {
 	    if(enemies[i].collidesWith(enemies[j])) {
 		if(-1 == $.inArray(i, deadEnemies)) {
+		    // stats
+		    stats.killsEnemy++;
+		    
+		    // kill enemy
 		    deadEnemies.push(i);
 		}
 		if(-1 == $.inArray(j, deadEnemies)) {
+		    // stats
+		    stats.killsEnemy++;
+		    
+		    // kill enemy
 		    deadEnemies.push(j);
 		}
 	    }
@@ -339,6 +369,9 @@ function update() {
     
     // remove dead enemies
     if(deadEnemies.length > 0) {
+	// stats
+	refreshStats();
+	
 	// play sound
 	playSound('enemy_kill');
 	
@@ -456,7 +489,7 @@ function randomPosition(collisionRadius) {
     // compute position
     var pos = new Position(Math.random() * canvas.width, Math.random()
 	    * canvas.height);
-	    pos.collisionRadius = collisionRadius;
+    pos.collisionRadius = collisionRadius;
     
     // check for collisions
     for( var i = 0; i < levels[currentLevel].walls.length; i++) {
@@ -466,10 +499,19 @@ function randomPosition(collisionRadius) {
 	}
     }
     
-    //no collisions
+    // no collisions
     return pos;
 }
 
+function refreshStats() {
+    for( var name in stats) {
+	$('#' + name).html(stats[name]);
+    }
+    $('#level').html(currentLevel + 1);
+}
+
+// //////////////////////////////////////////////////////////////////////
+// Objects
 function copyObject(target, source) {
     // copy all attributes and methods
     for( var p in source) {
