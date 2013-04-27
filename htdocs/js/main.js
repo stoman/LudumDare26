@@ -28,7 +28,14 @@ var sound_index = {
     enemy_kill : 0,
     player_hit : 0
 };
-var pointsHistory = 5;
+var pointsHistory = 10;
+var colors = {
+    player : '#339033',
+    enemy : '#333390',
+    playerHistory : ['#eef8ee', '#eeecee', '#dde8dd', '#ddecdd', '#cce8cc', '#ccdccc', '#bbd8bb', '#bbdcbb', '#aad8aa'],
+    enemyHistory : ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#eeeef8', '#dddde8', '#cccce8', '#bbbbd8', '#aaaad8'],
+    debug : '#000000'
+};
 
 $(function() {
     $(document).keydown(function(e) {
@@ -78,6 +85,7 @@ function draw() {
 	enemies[i].render();
     }
     
+    context.fillStyle = colors.debug;
     context.fillText('fps: ' + frameRate, 10, 10);
     context.fillText('keysPressed: [' + keysPressed + ']', 10, 20);
     context.fillText('enemies: ' + enemies.length, 10, 30);
@@ -184,10 +192,22 @@ function Player(x, y, angle, speed, agility) {
     this.collisionRadius = 5;
     
     this.render = function() {
+	//history
+	for( var i = 0; i < this.xHistory.length; i++) {
+	    context.beginPath();
+	    context.rect(this.xHistory[i] - (i + 1)/2,
+		    this.yHistory[i] - (i + 1)/2, (i + 1), (i + 1));
+	    context.closePath();
+	    context.fillStyle = colors.playerHistory[i];
+	    context.fill();
+	}
+
+	//object
 	context.beginPath();
 	context.rect(this.x - 5, this.y - 5, 10, 10);
 	context.closePath();
-	context.fill();
+	context.fillStyle = colors.player;
+	context.fill();	
     };
 }
 
@@ -195,17 +215,21 @@ function Enemy(x, y, angle, speed, agility) {
     copyObject(this, new Thing(x, y, angle, speed, agility));
     
     this.render = function() {
-	context.beginPath();
-	context.rect(this.x - 2, this.y - 2, 4, 4);
-	context.closePath();
-	context.fill();
-	
+	//history
 	for( var i = 0; i < this.xHistory.length; i++) {
 	    context.beginPath();
 	    context.rect(this.xHistory[i] - 1, this.yHistory[i] - 1, 2, 2);
 	    context.closePath();
+	    context.fillStyle = colors.enemyHistory[i];
 	    context.fill();
 	}
+	
+	//object
+	context.beginPath();
+	context.rect(this.x - 2, this.y - 2, 4, 4);
+	context.closePath();
+	context.fillStyle = colors.enemy;
+	context.fill();	
     };
 }
 
@@ -220,16 +244,17 @@ function Thing(x, y, angle, speed, agility) {
     this.collisionRadius = 3;
     
     this.updatePosition = function() {
-	if(currentFrame % 1 == 0) {
-	    this.xHistory.push(this.x);
-	    if(this.xHistory.length > pointsHistory) {
-		this.xHistory.splice(0, this.xHistory.length - pointsHistory);
-	    }
-	    this.yHistory.push(this.y);
-	    if(this.yHistory.length > pointsHistory) {
-		this.yHistory.splice(0, this.yHistory.length - pointsHistory);
-	    }
+	//save history
+	this.xHistory.push(this.x);
+	if(this.xHistory.length > pointsHistory) {
+	    this.xHistory.splice(0, this.xHistory.length - pointsHistory);
 	}
+	this.yHistory.push(this.y);
+	if(this.yHistory.length > pointsHistory) {
+	    this.yHistory.splice(0, this.yHistory.length - pointsHistory);
+	}
+
+	//update
 	this.x += this.speed * Math.sin(this.angle);
 	this.y += this.speed * Math.cos(this.angle);
     };
