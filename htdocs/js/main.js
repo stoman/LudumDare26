@@ -31,16 +31,16 @@ $(function() {
 		Math.random() * canvas.width,
 		Math.random() * canvas.height,
 		Math.random() * 2 * Math.PI,
-		10,
+		4,
 		0.1
 	);
-	for(var i = 0; i < 5; i++) {
+	for(var i = 0; i < 500; i++) {
 		enemies.push(new Enemy(
 			Math.random() * canvas.width,
 			Math.random() * canvas.height,
 			Math.random() * 2 * Math.PI,
 			5 + Math.random(),
-			0.2 * Math.random()
+			0.05 * Math.random() + 0.03
 		));
 	}
 	
@@ -91,6 +91,23 @@ function update() {
 	if(-1 != $.inArray(37, keysPressed) || -1 != $.inArray(65, keysPressed) ) {
 		player.turnLeft();
 	}
+	
+	//detect collisions
+	var deadEnemies = [];
+	for(var i = 0; i < enemies.length; i++) {
+		for(var j = i+1; j < enemies.length; j++) {
+			if(enemies[i].collidesWith(enemies[j])) {
+				deadEnemies.push(i);
+				deadEnemies.push(j);
+			}
+		}
+	}
+	
+	//remove dead enemies
+	deadEnemies.sort().reverse();
+	for(var i = 0; i < deadEnemies.length; i++) {
+		enemies.splice(deadEnemies[i], 1);
+	}
 }
 
 function normalizeAngle(a) {
@@ -109,6 +126,7 @@ function copyObject(target, source) {
 
 function Player(x, y, angle, speed, agility) {
 	copyObject(this, new Thing(x, y, angle, speed, agility));
+	this.collisionRadius = 0;
 	
 	this.render = function() {
 		context.beginPath();
@@ -126,17 +144,6 @@ function Enemy(x, y, angle, speed, agility) {
 		context.rect(this.x-2, this.y-2, 4, 4);
 		context.closePath();
 		context.fill();
-		
-		var targetAngle = Math.atan((player.x-this.x) / (player.y-this.y));
-		if(player.y-this.y < 0) {
-			targetAngle += Math.PI;
-		}
-		targetAngle = normalizeAngle(targetAngle);
-		
-		context.beginPath();
-		context.rect(this.x-1 + 10 * Math.sin(targetAngle), this.y-1 + 10 * Math.cos(targetAngle), 2, 2);
-		context.closePath();
-		context.fill();
 	};
 }
 	
@@ -146,6 +153,7 @@ function Thing(x, y, angle, speed, agility) {
 	this.angle = angle;
 	this.speed = speed;
 	this.agility = agility;
+	this.collisionRadius = 3;
 	
 	this.updatePosition = function() {
 		this.x += this.speed * Math.sin(this.angle);
@@ -193,5 +201,9 @@ function Thing(x, y, angle, speed, agility) {
 				this.turnRight();
 			}
 		}
+	};
+	
+	this.collidesWith = function(target) {
+		return this.collisionRadius + target.collisionRadius >= Math.abs(this.x-target.x) + Math.abs(this.y-target.y);
 	};
 }
