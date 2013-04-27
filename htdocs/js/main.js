@@ -1,13 +1,14 @@
 var canvas;
 var context;
 var player;
-var enemies = [];
-var highlights = [];
-var keysPressed = [];
-var currentFrame = 0;
-var frameRateStart = 0;
-var frameRate = 0;
-var sound = {
+var enemies;
+var highlights;
+var keysPressed;
+var currentFrame;
+var frameRateStart;
+var frameRate;
+var framesNoEnemy;
+var sounds = {
     background : [new Audio("sound/background_1.mp3"),
 	    new Audio("sound/background_2.mp3"),
 	    new Audio("sound/background_3.mp3"),
@@ -29,6 +30,8 @@ var soundIndex = {
     enemy_kill : 0,
     player_hit : 0
 };
+var currentBackground;
+var currentCronjobs = [];
 var pointsHistory = 10;
 var colors = {
     player : '#339033',
@@ -43,10 +46,32 @@ var colors = {
 	    '#a63333', '#992222', '#951111', '#880000', '#850000'],
     birth : ['#eeffff', '#ddf8f8', '#cceeee', '#bbe8e8', '#aadddd', '#99d7d7',
 	    '#88cccc', '#77c7c7', '#66bbbb', '#55b6b6', '#44aaaa', '#33a6a6',
-	    '#229999', '#119595', '#008888', '#008585']
+	    '#229999', '#119595', '#008888', '#008585'],
+    wall : '#c0c0c0'
 };
+var currentLevel = 0;
+var levels;
 
 $(function() {
+    levels = [{
+    	backgroundIndex: 0,
+	enemyAgilityBase : 0.05,
+	enemyAgilityRandom : 0.03,
+	enemySpeedBase : 5,
+	enemySpeedRandom : 1,
+	initialEnemies : 10,
+	penaltyWall : 3,
+	penaltyEnemy : 3,
+	playerAgility : 0.1,
+	playerSpeed : 4,
+	walls : [new Wall(0, 0, 15, 450),// left
+	new Wall(585, 0, 600, 450),// right
+	new Wall(0, 0, 600, 15),// top
+	new Wall(0, 435, 600, 450)// bottom
+	],
+	winFrames: 30 
+    }];
+    
     $(document).keydown(function(e) {
 	if(-1 == $.inArray(e.keyCode, keysPressed)) {
 	    keysPressed.push(e.keyCode);
@@ -65,17 +90,49 @@ $(function() {
     canvas.width = $('#main-canvas').width();
     
     context = canvas.getContext('2d');
-    
-    player = new Player(Math.random() * canvas.width, Math.random()
-	    * canvas.height, Math.random() * 2 * Math.PI, 4, 0.1);
-    addEnemies(10);
-    
-    playBackgroundMusic(0);
-    
-    setInterval(draw, 30);
-    setInterval(update, 30);
-    setInterval(measureFrameRate, 1000);
+    startLevel();
 });
+
+function startLevel() {
+    // create random position
+    var pos = randomPosition();
+    
+    // add player
+    player = new Player(pos.x, pos.y, Math.random() * 2 * Math.PI,
+	    levels[currentLevel].playerSpeed,
+	    levels[currentLevel].playerAgility);
+    
+    // initialize arrays
+    enemies = [];
+    highlights = [];
+    keysPressed = [];
+    currentFrame = 0;
+    frameRateStart = 0;
+    frameRate = 0;
+    framesNoEnemy = 0;
+    
+    // add enemies
+    addEnemies(levels[currentLevel].initialEnemies);
+    
+    // play background music
+    currentBackground = playBackgroundMusic(levels[currentLevel].backgroundIndex);
+    
+    // add cronjobs
+    currentCronjobs.push(setInterval(draw, 30));
+    currentCronjobs.push(setInterval(update, 30));
+    currentCronjobs.push(setInterval(measureFrameRate, 1000));
+}
+
+function stopLevel() {
+    // stop background music
+    currentBackground.pause();
+    
+    // stop cronjobs
+    for( var i = 0; i < currentCronjobs.length; i++) {
+	clearInterval(currentCronjobs[i]);
+    }
+    currentCronjobs = [];
+}
 
 function measureFrameRate() {
     frameRate = currentFrame - frameRateStart;
@@ -88,13 +145,18 @@ function draw() {
     // empty canvas
     canvas.height = canvas.height;
     
-    // draw player
-    player.render();
+    // draw levels[currentLevel].walls
+    for( var i = 0; i < levels[currentLevel].walls.length; i++) {
+	levels[currentLevel].walls[i].render();
+    }
     
     // draw enemies
     for( var i = 0; i < enemies.length; i++) {
 	enemies[i].render();
     }
+    
+    // draw player
+    player.render();
     
     // draw highlights
     for( var i = 0; i < highlights.length; i++) {
@@ -138,13 +200,38 @@ function update() {
 	    // remove enemy
 	    enemies.splice(i, 1);
 	    // add enemies
-	    addEnemies(1);
+	    addEnemies(levels[currentLevel].penaltyEnemy);
 	}
     }
     
-    // between enemies
+    // player vs. wall
+    for( var i = 0; i < levels[currentLevel].walls.length; i++) {
+	if(levels[currentLevel].walls[i].collidesWith(player)) {
+	    // play sound
+	    playSound('player_hit');
+	    // add explosion
+	    highlights.push(new Explosion(player.x, player.y));
+	    // add enemies
+	    addEnemies(levels[currentLevel].penaltyWall);
+	    // adjust player
+	    player.angle += Math.PI;
+	    player.updatePosition();
+	    player.angle = 2 * Math.PI * Math.random();
+	}
+    }
+    
+    // enemies
     var deadEnemies = [];
     for( var i = 0; i < enemies.length; i++) {
+	// enemy vs. wall
+	for( var j = 0; j < levels[currentLevel].walls.length; j++) {
+	    if(levels[currentLevel].walls[j].collidesWith(enemies[i])) {
+		if(-1 == $.inArray(i, deadEnemies)) {
+		    deadEnemies.push(i);
+		}
+	    }
+	}
+	// between enemies
 	for( var j = i + 1; j < enemies.length; j++) {
 	    if(enemies[i].collidesWith(enemies[j])) {
 		if(-1 == $.inArray(i, deadEnemies)) {
@@ -182,17 +269,31 @@ function update() {
 	    highlights[i].updatePosition();
 	}
     }
+    
+    // increment number of fremes without enemies
+    if(enemies.length == 0) {
+	framesNoEnemy++;
+    }
+    else {
+    	framesNoEnemy = 0;
+    }
+    
+    //won?
+    if(framesNoEnemy >= levels[currentLevel].winFrames) {
+    	stopLevel();
+    }
 }
 
 function playSound(name) {
-    sound[name][soundIndex[name]].play();
-    soundIndex[name] = (soundIndex[name] + 1) % sound[name].length;
+    sounds[name][soundIndex[name]].play();
+    soundIndex[name] = (soundIndex[name] + 1) % sounds[name].length;
     
 }
 
 function playBackgroundMusic(index) {
-    sound.background[index].loop = true;
-    sound.background[index].play();
+    sounds.background[index].loop = true;
+    sounds.background[index].play();
+    return sounds.background[index];
 }
 
 function normalizeAngle(a) {
@@ -210,20 +311,67 @@ function addEnemies(n) {
 }
 
 function addEnemy() {
+    // create random position
+    var pos = randomPosition();
+    
     // create enemy
-    var enemy = new Enemy(Math.random() * canvas.width, Math.random()
-	    * canvas.height, Math.random() * 2 * Math.PI, 5 + Math.random(),
-	    0.05 * Math.random() + 0.03);
+    var enemy = new Enemy(pos.x, pos.y, Math.random() * 2 * Math.PI,
+	    levels[currentLevel].enemySpeedBase
+		    + levels[currentLevel].enemySpeedRandom * Math.random(),
+	    levels[currentLevel].enemyAgilityBase
+		    + levels[currentLevel].enemyAgilityRandom * Math.random());
     enemies.push(enemy);
     
     // add birth highlight
     highlights.push(new Birth(enemy.x, enemy.y));
 }
 
+function randomPosition() {
+    var pos = new Position(Math.random() * canvas.width, Math.random()
+	    * canvas.height);
+    for( var i = 0; i < levels[currentLevel].walls.length; i++) {
+	if(levels[currentLevel].walls[i].collidesWith(pos)) {
+	    // try again
+	    return randomPosition();
+	}
+    }
+    return pos;
+}
+
 function copyObject(target, source) {
     for( var p in source) {
 	target[p] = source[p];
     }
+}
+
+function Wall(xMin, yMin, xMax, yMax) {
+    this.xMin = xMin;
+    this.yMin = yMin;
+    this.xMax = xMax;
+    this.yMax = yMax;
+    
+    this.render = function() {
+	context.beginPath();
+	context.rect(this.xMin, this.yMin, this.xMax - this.xMin, this.yMax
+		- this.yMin);
+	context.closePath();
+	context.fillStyle = colors.wall;
+	context.fill();
+    };
+    
+    this.collidesXWith = function(target) {
+	return this.xMin < target.x + target.collisionRadius
+		&& target.x - target.collisionRadius < this.xMax;
+    };
+    
+    this.collidesYWith = function(target) {
+	return this.yMin < target.y + target.collisionRadius
+		&& target.y - target.collisionRadius < this.yMax;
+    };
+    
+    this.collidesWith = function(target) {
+	return this.collidesXWith(target) && this.collidesYWith(target);
+    };
 }
 
 function Explosion(x, y) {
@@ -253,8 +401,8 @@ function Birth(x, y) {
 }
 
 function Highlight(x, y) {
-    this.x = x;
-    this.y = y;
+    copyObject(this, new Position(x, y));
+    
     this.step = colors.explosion.length - 1;
     
     this.updatePosition = function() {
@@ -313,9 +461,9 @@ function Enemy(x, y, angle, speed, agility) {
 }
 
 function Thing(x, y, angle, speed, agility) {
-    this.x = x;
+    copyObject(this, new Position(x, y));
+    
     this.xHistory = [];
-    this.y = y;
     this.yHistory = [];
     this.angle = angle;
     this.speed = speed;
@@ -388,4 +536,9 @@ function Thing(x, y, angle, speed, agility) {
 		- target.x)
 		+ Math.abs(this.y - target.y);
     };
+}
+
+function Position(x, y) {
+    this.x = x;
+    this.y = y;
 }
