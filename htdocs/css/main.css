@@ -2,3 +2,6 @@
 	width: 600px;
 	height: 450px;
 }
+.muted {
+	font-weight: bold;	
+}

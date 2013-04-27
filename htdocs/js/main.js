@@ -38,6 +38,7 @@ var soundIndex = {
     player_hit : 0
 };
 var currentBackground;
+var muted = false;
 
 // cronjobs
 var currentCronjobs = [];
@@ -137,7 +138,7 @@ $(function() {
 
 function loadLevel() {
     // create random position
-    var pos = randomPosition();
+    var pos = randomPosition(50);
     
     // add player
     player = new Player(pos.x, pos.y, Math.random() * 2 * Math.PI,
@@ -380,15 +381,43 @@ function update() {
 }
 
 function playSound(name) {
-    sounds[name][soundIndex[name]].play();
-    soundIndex[name] = (soundIndex[name] + 1) % sounds[name].length;
-    
+    if(!muted) {
+	sounds[name][soundIndex[name]].play();
+	soundIndex[name] = (soundIndex[name] + 1) % sounds[name].length;
+    }
 }
 
 function playBackgroundMusic(index) {
     sounds.background[index].loop = true;
-    sounds.background[index].play();
+    if(!muted) {
+	sounds.background[index].play();
+    }
     return sounds.background[index];
+}
+
+function mute() {
+    muted = true;
+    if(currentBackground != undefined) {
+	currentBackground.pause();
+    }
+    $('#mute').html('unmute').addClass('muted');
+}
+
+function unmute() {
+    muted = false;
+    if(currentBackground != undefined) {
+	currentBackground.play();
+    }
+    $('#mute').html('mute').removeClass('muted');
+}
+
+function toggleMute() {
+    if(muted) {
+	unmute();
+    }
+    else {
+	mute();
+    }
 }
 
 function normalizeAngle(a) {
@@ -407,7 +436,7 @@ function addEnemies(n, showHighlight) {
 
 function addEnemy(showHighlight) {
     // create random position
-    var pos = randomPosition();
+    var pos = randomPosition(10);
     
     // create enemy
     var enemy = new Enemy(pos.x, pos.y, Math.random() * 2 * Math.PI,
@@ -423,18 +452,21 @@ function addEnemy(showHighlight) {
     }
 }
 
-function randomPosition() {
+function randomPosition(collisionRadius) {
     // compute position
     var pos = new Position(Math.random() * canvas.width, Math.random()
 	    * canvas.height);
+	    pos.collisionRadius = collisionRadius;
     
     // check for collisions
     for( var i = 0; i < levels[currentLevel].walls.length; i++) {
 	if(levels[currentLevel].walls[i].collidesWith(pos)) {
 	    // try again
-	    return randomPosition();
+	    return randomPosition(collisionRadius);
 	}
     }
+    
+    //no collisions
     return pos;
 }
 
@@ -511,7 +543,7 @@ function Highlight(x, y) {
     
     this.step = colors.explosion.length - 1;
     
-    //compute the object's next position
+    // compute the object's next position
     this.updatePosition = function() {
 	this.step = Math.max(this.step - 1, 0);
     };
@@ -584,7 +616,7 @@ function Thing(x, y, angle, speed, agility) {
     this.agility = agility;
     this.collisionRadius = 3;
     
-    //compute the object's next position
+    // compute the object's next position
     this.updatePosition = function() {
 	// save history
 	this.xHistory.push(this.x);
