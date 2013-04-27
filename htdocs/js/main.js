@@ -7,6 +7,10 @@ var currentFrame = 0;
 var frameRateStart = 0;
 var frameRate = 0;
 var sound = {
+    background : [new Audio("sound/background_1.mp3"),
+	    new Audio("sound/background_2.mp3"),
+	    new Audio("sound/background_3.mp3"),
+	    new Audio("sound/background_4.mp3")],
     enemy_kill : [new Audio("sound/enemy_kill_1.wav"),
 	    new Audio("sound/enemy_kill_2.wav"),
 	    new Audio("sound/enemy_kill_3.wav"),
@@ -49,6 +53,8 @@ $(function() {
     player = new Player(Math.random() * canvas.width, Math.random()
 	    * canvas.height, Math.random() * 2 * Math.PI, 4, 0.1);
     addEnemies(10);
+    
+    playBackgroundMusic(0);
     
     setInterval(draw, 30);
     setInterval(update, 30);
@@ -140,6 +146,11 @@ function play_sound(name) {
     sound[name][sound_index[name]].play();
     sound_index[name] = (sound_index[name] + 1) % sound[name].length;
     
+}
+
+function playBackgroundMusic(index) {
+    sound.background[index].loop = true;
+    sound.background[index].play();
 }
 
 function normalizeAngle(a) {
