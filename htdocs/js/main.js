@@ -24,6 +24,7 @@ var sound_index = {
     enemy_kill : 0,
     player_hit : 0
 };
+var pointsHistory = 5;
 
 $(function() {
     $(document).keydown(function(e) {
@@ -187,18 +188,37 @@ function Enemy(x, y, angle, speed, agility) {
 	context.rect(this.x - 2, this.y - 2, 4, 4);
 	context.closePath();
 	context.fill();
+	
+	for( var i = 0; i < this.xHistory.length; i++) {
+	    context.beginPath();
+	    context.rect(this.xHistory[i] - 1, this.yHistory[i] - 1, 2, 2);
+	    context.closePath();
+	    context.fill();
+	}
     };
 }
 
 function Thing(x, y, angle, speed, agility) {
     this.x = x;
+    this.xHistory = [];
     this.y = y;
+    this.yHistory = [];
     this.angle = angle;
     this.speed = speed;
     this.agility = agility;
     this.collisionRadius = 3;
     
     this.updatePosition = function() {
+	if(currentFrame % 1 == 0) {
+	    this.xHistory.push(this.x);
+	    if(this.xHistory.length > pointsHistory) {
+		this.xHistory.splice(0, this.xHistory.length - pointsHistory);
+	    }
+	    this.yHistory.push(this.y);
+	    if(this.yHistory.length > pointsHistory) {
+		this.yHistory.splice(0, this.yHistory.length - pointsHistory);
+	    }
+	}
 	this.x += this.speed * Math.sin(this.angle);
 	this.y += this.speed * Math.cos(this.angle);
     };
