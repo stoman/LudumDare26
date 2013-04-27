@@ -34,15 +34,7 @@ $(function() {
 		4,
 		0.1
 	);
-	for(var i = 0; i < 500; i++) {
-		enemies.push(new Enemy(
-			Math.random() * canvas.width,
-			Math.random() * canvas.height,
-			Math.random() * 2 * Math.PI,
-			5 + Math.random(),
-			0.05 * Math.random() + 0.03
-		));
-	}
+	addEnemies(500);
 	
 	setInterval(draw, 30);
 	setInterval(update, 30);
@@ -68,6 +60,7 @@ function draw() {
 	
 	context.fillText('fps: ' + frameRate, 10, 10);
 	context.fillText('keysPressed: [' + keysPressed + ']', 10, 20);
+	context.fillText('enemies: ' + enemies.length, 10, 30);
 }
 
 function update() {
@@ -93,6 +86,14 @@ function update() {
 	}
 	
 	//detect collisions
+	//player vs. enemy
+	for(var i = 0; i < enemies.length; i++) {
+		if(enemies[i].collidesWith(player)) {
+			addEnemies(10);
+		}
+	}
+	
+	//between enemies
 	var deadEnemies = [];
 	for(var i = 0; i < enemies.length; i++) {
 		for(var j = i+1; j < enemies.length; j++) {
@@ -118,6 +119,22 @@ function normalizeAngle(a) {
 	return a;
 }
 
+function addEnemies(n) {
+	for(var i = 0; i < n; i++) {
+		addEnemy();
+	}
+}
+
+function addEnemy() {
+	enemies.push(new Enemy(
+		Math.random() * canvas.width,
+		Math.random() * canvas.height,
+		Math.random() * 2 * Math.PI,
+		5 + Math.random(),
+		0.05 * Math.random() + 0.03
+	));
+}
+
 function copyObject(target, source) {
 	for(var p in source) {
 		target[p] = source[p];
@@ -126,7 +143,7 @@ function copyObject(target, source) {
 
 function Player(x, y, angle, speed, agility) {
 	copyObject(this, new Thing(x, y, angle, speed, agility));
-	this.collisionRadius = 0;
+	this.collisionRadius = 2;
 	
 	this.render = function() {
 		context.beginPath();
