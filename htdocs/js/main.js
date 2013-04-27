@@ -2,6 +2,7 @@ var canvas;
 var context;
 var player;
 var enemies = [];
+var highlights = [];
 var keysPressed = [];
 var currentFrame = 0;
 var frameRateStart = 0;
@@ -24,17 +25,25 @@ var sound = {
 	    new Audio("sound/player_hit_3.wav"),
 	    new Audio("sound/player_hit_4.wav")],
 };
-var sound_index = {
+var soundIndex = {
     enemy_kill : 0,
     player_hit : 0
 };
 var pointsHistory = 10;
 var colors = {
     player : '#339033',
+    playerHistory : ['#eef8ee', '#eeecee', '#dde8dd', '#ddecdd', '#cce8cc',
+	    '#ccdccc', '#bbd8bb', '#bbdcbb', '#aad8aa'],
     enemy : '#333390',
-    playerHistory : ['#eef8ee', '#eeecee', '#dde8dd', '#ddecdd', '#cce8cc', '#ccdccc', '#bbd8bb', '#bbdcbb', '#aad8aa'],
-    enemyHistory : ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#eeeef8', '#dddde8', '#cccce8', '#bbbbd8', '#aaaad8'],
-    debug : '#000000'
+    enemyHistory : ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff',
+	    '#eeeef8', '#dddde8', '#cccce8', '#bbbbd8', '#aaaad8'],
+    debug : '#000000',
+    explosion : ['#ffeeee', '#f8dddd', '#eecccc', '#e8bbbb', '#ddaaaa',
+	    '#d79999', '#cc8888', '#c77777', '#bb6666', '#b65555', '#aa4444',
+	    '#a63333', '#992222', '#951111', '#880000', '#850000'],
+    birth : ['#eeffff', '#ddf8f8', '#cceeee', '#bbe8e8', '#aadddd', '#99d7d7',
+	    '#88cccc', '#77c7c7', '#66bbbb', '#55b6b6', '#44aaaa', '#33a6a6',
+	    '#229999', '#119595', '#008888', '#008585']
 };
 
 $(function() {
@@ -79,10 +88,17 @@ function draw() {
     // empty canvas
     canvas.height = canvas.height;
     
-    // draw elements
+    // draw player
     player.render();
+    
+    // draw enemies
     for( var i = 0; i < enemies.length; i++) {
 	enemies[i].render();
+    }
+    
+    // draw highlights
+    for( var i = 0; i < highlights.length; i++) {
+	highlights[i].render();
     }
     
     context.fillStyle = colors.debug;
@@ -118,11 +134,11 @@ function update() {
     for( var i = enemies.length - 1; i >= 0; i--) {
 	if(enemies[i].collidesWith(player)) {
 	    // play sound
-	    play_sound('player_hit');
+	    playSound('player_hit');
 	    // remove enemy
 	    enemies.splice(i, 1);
 	    // add enemies
-	    addEnemies(5);
+	    addEnemies(1);
 	}
     }
     
@@ -131,8 +147,12 @@ function update() {
     for( var i = 0; i < enemies.length; i++) {
 	for( var j = i + 1; j < enemies.length; j++) {
 	    if(enemies[i].collidesWith(enemies[j])) {
-		deadEnemies.push(i);
-		deadEnemies.push(j);
+		if(-1 == $.inArray(i, deadEnemies)) {
+		    deadEnemies.push(i);
+		}
+		if(-1 == $.inArray(j, deadEnemies)) {
+		    deadEnemies.push(j);
+		}
 	    }
 	}
     }
@@ -140,19 +160,33 @@ function update() {
     // remove dead enemies
     if(deadEnemies.length > 0) {
 	// play sound
-	play_sound('enemy_kill');
+	playSound('enemy_kill');
 	
-	// remove enemies
 	deadEnemies.sort().reverse();
 	for( var i = 0; i < deadEnemies.length; i++) {
+	    // add explosion
+	    highlights.push(new Explosion(enemies[deadEnemies[i]].x,
+		    enemies[deadEnemies[i]].y));
+	    
+	    // remove enemies
 	    enemies.splice(deadEnemies[i], 1);
+	}
+    }
+    
+    // update highlights
+    for( var i = highlights.length - 1; i >= 0; i--) {
+	if(highlights[i].step == 0) {
+	    highlights.splice(i, 1);
+	}
+	else {
+	    highlights[i].updatePosition();
 	}
     }
 }
 
-function play_sound(name) {
-    sound[name][sound_index[name]].play();
-    sound_index[name] = (sound_index[name] + 1) % sound[name].length;
+function playSound(name) {
+    sound[name][soundIndex[name]].play();
+    soundIndex[name] = (soundIndex[name] + 1) % sound[name].length;
     
 }
 
@@ -176,9 +210,14 @@ function addEnemies(n) {
 }
 
 function addEnemy() {
-    enemies.push(new Enemy(Math.random() * canvas.width, Math.random()
+    // create enemy
+    var enemy = new Enemy(Math.random() * canvas.width, Math.random()
 	    * canvas.height, Math.random() * 2 * Math.PI, 5 + Math.random(),
-	    0.05 * Math.random() + 0.03));
+	    0.05 * Math.random() + 0.03);
+    enemies.push(enemy);
+    
+    // add birth highlight
+    highlights.push(new Birth(enemy.x, enemy.y));
 }
 
 function copyObject(target, source) {
@@ -187,27 +226,67 @@ function copyObject(target, source) {
     }
 }
 
+function Explosion(x, y) {
+    copyObject(this, new Highlight(x, y));
+    
+    this.render = function() {
+	context.beginPath();
+	context.arc(this.x, this.y, Math.ceil((this.step + 1) / 3), 0,
+		2 * Math.PI, false);
+	context.closePath();
+	context.fillStyle = colors.explosion[this.step];
+	context.fill();
+    };
+}
+
+function Birth(x, y) {
+    copyObject(this, new Highlight(x, y));
+    
+    this.render = function() {
+	context.beginPath();
+	context.arc(this.x, this.y, Math.ceil((this.step + 1) / 3), 0,
+		2 * Math.PI, false);
+	context.closePath();
+	context.fillStyle = colors.birth[this.step];
+	context.fill();
+    };
+}
+
+function Highlight(x, y) {
+    this.x = x;
+    this.y = y;
+    this.step = colors.explosion.length - 1;
+    
+    this.updatePosition = function() {
+	this.step = Math.max(this.step - 1, 0);
+    };
+    
+    this.render = function() {
+	console.log('render not implemented');
+    };
+}
+
 function Player(x, y, angle, speed, agility) {
     copyObject(this, new Thing(x, y, angle, speed, agility));
     this.collisionRadius = 5;
     
     this.render = function() {
-	//history
+	// history
 	for( var i = 0; i < this.xHistory.length; i++) {
 	    context.beginPath();
-	    context.rect(this.xHistory[i] - (i + 1)/2,
-		    this.yHistory[i] - (i + 1)/2, (i + 1), (i + 1));
+	    context.rect(this.xHistory[i] - (i + 1) / 2, this.yHistory[i]
+		    - (i + 1) / 2, (i + 1), (i + 1));
 	    context.closePath();
 	    context.fillStyle = colors.playerHistory[i];
 	    context.fill();
 	}
-
-	//object
+	
+	// object
 	context.beginPath();
 	context.rect(this.x - 5, this.y - 5, 10, 10);
 	context.closePath();
 	context.fillStyle = colors.player;
-	context.fill();	
+	context.fill();
     };
 }
 
@@ -215,7 +294,7 @@ function Enemy(x, y, angle, speed, agility) {
     copyObject(this, new Thing(x, y, angle, speed, agility));
     
     this.render = function() {
-	//history
+	// history
 	for( var i = 0; i < this.xHistory.length; i++) {
 	    context.beginPath();
 	    context.rect(this.xHistory[i] - 1, this.yHistory[i] - 1, 2, 2);
@@ -224,12 +303,12 @@ function Enemy(x, y, angle, speed, agility) {
 	    context.fill();
 	}
 	
-	//object
+	// object
 	context.beginPath();
 	context.rect(this.x - 2, this.y - 2, 4, 4);
 	context.closePath();
 	context.fillStyle = colors.enemy;
-	context.fill();	
+	context.fill();
     };
 }
 
@@ -244,7 +323,7 @@ function Thing(x, y, angle, speed, agility) {
     this.collisionRadius = 3;
     
     this.updatePosition = function() {
-	//save history
+	// save history
 	this.xHistory.push(this.x);
 	if(this.xHistory.length > pointsHistory) {
 	    this.xHistory.splice(0, this.xHistory.length - pointsHistory);
@@ -253,8 +332,8 @@ function Thing(x, y, angle, speed, agility) {
 	if(this.yHistory.length > pointsHistory) {
 	    this.yHistory.splice(0, this.yHistory.length - pointsHistory);
 	}
-
-	//update
+	
+	// update
 	this.x += this.speed * Math.sin(this.angle);
 	this.y += this.speed * Math.cos(this.angle);
     };
