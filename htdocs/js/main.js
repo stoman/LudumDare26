@@ -70,6 +70,23 @@ $(function() {
 	new Wall(0, 435, 600, 450)// bottom
 	],
 	winFrames: 30 
+    },{
+    	backgroundIndex: 1,
+	enemyAgilityBase : 0.1,
+	enemyAgilityRandom : 0.06,
+	enemySpeedBase : 10,
+	enemySpeedRandom : 2,
+	initialEnemies : 50,
+	penaltyWall : 5,
+	penaltyEnemy : 5,
+	playerAgility : 0.2,
+	playerSpeed : 8,
+	walls : [new Wall(0, 0, 15, 450),// left
+	new Wall(585, 0, 600, 450),// right
+	new Wall(0, 0, 600, 15),// top
+	new Wall(0, 435, 600, 450)// bottom
+	],
+	winFrames: 30 
     }];
     
     $(document).keydown(function(e) {
@@ -119,7 +136,7 @@ function startLevel() {
     
     // add cronjobs
     currentCronjobs.push(setInterval(draw, 30));
-    currentCronjobs.push(setInterval(update, 30));
+    setTimeout(function() {currentCronjobs.push(setInterval(update, 30));}, 1200);
     currentCronjobs.push(setInterval(measureFrameRate, 1000));
 }
 
@@ -132,6 +149,11 @@ function stopLevel() {
 	clearInterval(currentCronjobs[i]);
     }
     currentCronjobs = [];
+}
+
+function nextLevel() {
+    currentLevel++;
+    startLevel();
 }
 
 function measureFrameRate() {
@@ -162,7 +184,16 @@ function draw() {
     for( var i = 0; i < highlights.length; i++) {
 	highlights[i].render();
     }
-    
+
+	//texts
+	if(currentFrame <= 30) {
+	    context.fillText('Ready?', 100, 100);
+	}
+	else if(currentFrame <= 40) {
+	    context.fillText('Go!', 100, 100);
+	}
+
+	//debug messages    
     context.fillStyle = colors.debug;
     context.fillText('fps: ' + frameRate, 10, 10);
     context.fillText('keysPressed: [' + keysPressed + ']', 10, 20);
@@ -281,6 +312,7 @@ function update() {
     //won?
     if(framesNoEnemy >= levels[currentLevel].winFrames) {
     	stopLevel();
+    	nextLevel();
     }
 }
 
