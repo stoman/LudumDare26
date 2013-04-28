@@ -1,55 +1,79 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="ISO-8859-1">
-		<title>LD26</title>
-		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
-		<link rel="stylesheet" href="css/main.css" />
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-		<script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-		<script type="text/javascript" src="js/main.js"></script>
-	</head>
-	<body>
-		<h1>Get outta my way!</h1>
+<head>
+<meta charset="ISO-8859-1">
+<title>LD26</title>
+<link rel="stylesheet"
+	href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="css/main.css" />
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript"
+	src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+	<h1>Get outta my way!</h1>
+
+	<div id="main">
+		<div id="game-won" style="display: none;">
+			<h2>You won the game!</h2>
+			<p>Text...bla...bla</p>
+			<p>
+				You got hit <span id="hits">0</span> times during your escape. Can
+				you do better? If you think so, <a href="#"
+					onclick="restartGame(); return false;">try it</a>!
+			</p>
+		</div>
+		
 		<canvas id="main-canvas"></canvas>
 		
-		<table id="stats">
-			<tr>
-				<td>Level:</td>
-				<td id="level">1</td>
-			</tr>
-			<tr>
-				<td>Enemies crashed at walls:</td>
-				<td id="killsWall">0</td>
-			</tr>
-			<tr>
-				<td>Enemies killed by collisions:</td>
-				<td id="killsEnemy">0</td>
-			</tr>
-			<tr>
-				<td>Caught by enemies:</td>
-				<td id="enemyHit">0</td>
-			</tr>
-			<tr>
-				<td>Crashed at walls:</td>
-				<td id="wallHit">0</td>
-			</tr>
-		</table>
+		<div id="sidebar">
+			<table id="stats">
+				<tr>
+					<td>Level:</td>
+					<td id="level">1</td>
+				</tr>
+				<tr>
+					<td>Enemies crashed at walls:</td>
+					<td id="killsWall">0</td>
+				</tr>
+				<tr>
+					<td>Enemies killed by collisions:</td>
+					<td id="killsEnemy">0</td>
+				</tr>
+				<tr>
+					<td>Caught by enemies:</td>
+					<td id="enemyHit">0</td>
+				</tr>
+				<tr>
+					<td>Crashed at walls:</td>
+					<td id="wallHit">0</td>
+				</tr>
+			</table>
 
-		<p>		
-			<a href="#" id="mute" onclick="toggleMute(); return false;">Mute</a>, 
-			Controls: left/right arrow or a/d
-		</p>
-		<h2>About</h2>
-		<p>
-			This is a game created in 48h for <a href="http://www.ludumdare.com/" target="_blank">Ludum Dare</a> 26. 
-		</p>
-		<p>
-			I wrote some blog posts about the creation of the game:
-		</p>
-		<ul>
-			<li><a href="http://www.ludumdare.com/compo/2013/04/27/im-in-too-37/" target="_blank">27.04.2013: I'm in, too</a></li>
-			<li><a href="http://www.ludumdare.com/compo/2013/04/28/progress-get-outta-my-way/" target="_blank">28.04.2013: Progress: Get outta my way!</a></li>
-		</ul>
-	</body>
+			<p>
+				<a href="#" id="mute" onclick="toggleMute(); return false;">Mute</a>
+			</p>
+			<p>
+				Controls: left/right arrow or a/d
+			</p>
+		</div>
+	</div>
+
+	<h2>About</h2>
+	<p>
+		This is a game created in 48h for <a href="http://www.ludumdare.com/"
+			target="_blank">Ludum Dare</a> 26.
+	</p>
+	<p>I wrote some blog posts about the creation of the game:</p>
+	<ul>
+		<li><a
+			href="http://www.ludumdare.com/compo/2013/04/27/im-in-too-37/"
+			target="_blank">27.04.2013: I'm in, too</a></li>
+		<li><a
+			href="http://www.ludumdare.com/compo/2013/04/28/progress-get-outta-my-way/"
+			target="_blank">28.04.2013: Progress: Get outta my way!</a></li>
+	</ul>
+</body>
 </html>

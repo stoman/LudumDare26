@@ -282,13 +282,32 @@ function stopLevel() {
 	clearInterval(currentCronjobs[i]);
     }
     currentCronjobs = [];
-    
-    // refresh stats the last time
-    refreshStats();
 }
 
 function nextLevel() {
-    currentLevel++;
+    if(currentLevel < levels.length - 1) {
+	// load next level
+	currentLevel++;
+	loadLevel();
+	refreshStats();
+    }
+    else {
+	// game won
+	$('#game-won').show('slide', {
+	    direction : 'up'
+	}, 'slow');
+    }
+}
+
+function restartGame() {
+    $('#game-won').hide();
+    stats = {
+	enemyHit : 0,
+	killsEnemy : 0,
+	killsWall : 0,
+	wallHit : 0
+    };
+    currentLevel = 0;
     loadLevel();
 }
 
@@ -538,7 +557,7 @@ function mute() {
     if(currentBackground != undefined) {
 	currentBackground.pause();
     }
-    $('#mute').html('unmute').addClass('muted');
+    $('#mute').html('Unmute').addClass('muted');
 }
 
 function unmute() {
@@ -546,7 +565,7 @@ function unmute() {
     if(currentBackground != undefined) {
 	currentBackground.play();
     }
-    $('#mute').html('mute').removeClass('muted');
+    $('#mute').html('Mute').removeClass('muted');
 }
 
 function toggleMute() {
@@ -637,6 +656,7 @@ function refreshStats() {
 	    direction : 'down'
 	}, 200);
     }
+    $('#hits').html(stats.enemyHit+stats.wallHit);
 }
 
 // //////////////////////////////////////////////////////////////////////
