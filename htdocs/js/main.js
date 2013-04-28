@@ -1,4 +1,7 @@
-//canvas element
+//debug
+var debug = false;
+
+// canvas element
 var canvas;
 var context;
 
@@ -81,7 +84,7 @@ $(function() {
 		enemyAgilityRandom : 0.03,
 		enemySpeedBase : 3,
 		enemySpeedRandom : 1,
-		initialEnemies : 5,
+		initialEnemies : 15,
 		initialPassersby : 0,
 		passerbyAgilityBase : 0.1,
 		passerbyAgilityRandom : 0,
@@ -106,7 +109,7 @@ $(function() {
 		enemyAgilityRandom : 0.03,
 		enemySpeedBase : 3,
 		enemySpeedRandom : 1,
-		initialEnemies : 25,
+		initialEnemies : 30,
 		initialPassersby : 0,
 		passerbyAgilityBase : 0.1,
 		passerbyAgilityRandom : 0,
@@ -117,7 +120,7 @@ $(function() {
 		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 2,
-		text : 'You escaped, but now they are warned! Sadly, you stole only one potato and are therefore still hungry. Get some more potatoes this time, but be aware that the guards got better and brought some colleagues. Afterwards you may finish lunch and take a trip down memory lane.',
+		text : 'You escaped, but now they are warned! Sadly, you stole only one potato and are therefore still hungry. Get some more potatoes this time, but be aware that the guards got better and brought some colleagues. Afterwards, you may finish lunch and take a trip down memory lane.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
@@ -288,7 +291,7 @@ $(function() {
 		penaltyPasserby : 50,
 		playerAgility : 0.1,
 		playerSpeed : 4,
-		text : 'When shoplifting in pedestrian areas there are many bassersby around. These are the yellow guys. Don\'t need to get rid of them, they are just in your way. In fact, I can\'t recommend hitting them. Cops get really angry when you do this. But you will notice this on your own... Good news: They obstruct your enemies\' way too.',
+		text : 'When shoplifting in pedestrian areas there are many passersby around. These are the yellow guys. You don\'t need to get rid of them, they are just in your way. In fact, I can\'t recommend hitting them. Cops get really angry when you do this. But you will notice this on your own... Good news is that they obstruct your enemies\' way too.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
@@ -313,7 +316,7 @@ $(function() {
 		penaltyPasserby : 50,
 		playerAgility : 0.1,
 		playerSpeed : 3,
-		text : 'Back to modern problems: These passersby are really annoying. All the time they are staring into their smartphones and don\'t look what is going on around them. They just move randomly around... Thankfully, this is no mobile game, as I don\'t want to insult you.',
+		text : 'Back to modern problems: These passersby are really annoying. All the time they are staring into their smartphones and don\'t look what is going on around them. They just move randomly around... Thankfully, this is no mobile game as I don\'t want to insult you.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
@@ -358,8 +361,8 @@ $(function() {
 		passerbyAgilityRandom : 0.03,
 		passerbySpeedBase : 1,
 		passerbySpeedRandom : 0.5,
-		penaltyWall : 10,
-		penaltyEnemy : 10,
+		penaltyWall : 5,
+		penaltyEnemy : 5,
 		penaltyPasserby : 50,
 		playerAgility : 0.1,
 		playerSpeed : 6,
@@ -629,7 +632,7 @@ function restartGame() {
 	    killsEnemy : 0,
 	    killsPasserby : 0,
 	    killsWall : 0,
-	    passersbyHit : 0,
+	    passerbyHit : 0,
 	    wallHit : 0
 	};
 	currentLevel = 0;
@@ -692,7 +695,7 @@ function draw() {
 	context.font = '15pt Calibri';
 	var words = levels[currentLevel].text.split(' ');
 	var currentLine = '';
-	var y = canvas.height * 3 / 4;
+	var y = canvas.height * 3 / 4 - 20;
 	for( var i = 0; i < words.length; i++) {
 	    var width = context.measureText(currentLine + ' ' + words[i]).width;
 	    if(width + 40 < canvas.width) {
@@ -703,7 +706,7 @@ function draw() {
 		width = context.measureText(currentLine).width;
 		// output
 		context.beginPath();
-		context.rect(canvas.width / 2 - width / 2, y - 10, width, 20);
+		context.rect(canvas.width / 2 - width / 2, y - 8, width, 16);
 		context.closePath();
 		context.fillStyle = colors.background;
 		context.fill();
@@ -718,7 +721,7 @@ function draw() {
 	// last line
 	var width = context.measureText(currentLine).width;
 	context.beginPath();
-	context.rect(canvas.width / 2 - width / 2, y - 10, width, 20);
+	context.rect(canvas.width / 2 - width / 2, y - 8, width, 16);
 	context.closePath();
 	context.fillStyle = colors.background;
 	context.fill();
@@ -752,13 +755,15 @@ function draw() {
     }
     
     // debug messages
-    context.font = '10pt Calibri';
-    context.textAlign = 'left';
-    context.textBaseline = 'top';
-    context.fillStyle = colors.debug;
-    context.fillText('fps: ' + frameRate, 20, 20);
-    context.fillText('keysPressed: [' + keysPressed + ']', 20, 30);
-    context.fillText('enemies: ' + enemies.length, 20, 40);
+    if(debug) {
+	context.font = '10pt Calibri';
+	context.textAlign = 'left';
+	context.textBaseline = 'top';
+	context.fillStyle = colors.debug;
+	context.fillText('fps: ' + frameRate, 20, 20);
+	context.fillText('keysPressed: [' + keysPressed + ']', 20, 30);
+	context.fillText('enemies: ' + enemies.length, 20, 40);
+    }
 }
 
 function update() {
