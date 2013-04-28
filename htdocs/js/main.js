@@ -50,6 +50,7 @@ var colors;
 // level
 var currentLevel = 0;
 var levels;
+var won = false;
 
 // state
 var readyToStart = true;
@@ -213,7 +214,7 @@ $(function() {
 	    startGame();
 	}
 	
-	//pause
+	// pause
 	if(e.keyCode == 80) {
 	    stopGame();
 	}
@@ -236,8 +237,6 @@ $(function() {
     
     // load first level
     loadLevel();
-    
-    mute();
 });
 
 function loadLevel() {
@@ -269,18 +268,20 @@ function loadLevel() {
 }
 
 function startGame() {
-    if(readyToStart) {
+    if(readyToStart && !won) {
 	// add cronjobs
 	currentCronjobs.push(setInterval(draw, 30));
 	currentCronjobs.push(setInterval(update, 30));
 	currentCronjobs.push(setInterval(measureFrameRate, 1000));
 	currentCronjobs.push(setInterval(refreshStats, 1000));
 	readyToStart = false;
+	
+	// show/hide links
+	$('#start-game').hide();
+	$('#stop-game').show();
     }
-    
-    // show/hide links
-    $('#start-game').hide();
-    $('#stop-game').show();
+    else if(won) {
+    restartGame();}
 }
 
 function stopGame() {
@@ -293,7 +294,7 @@ function stopGame() {
     // adjust variables
     readyToStart = true;
     
-    //redraw
+    // redraw
     draw();
     
     // show/hide links
@@ -316,19 +317,30 @@ function nextLevel() {
 	$('#game-won').show('slide', {
 	    direction : 'up'
 	}, 'slow');
+	won = true;
+	draw();
     }
 }
 
 function restartGame() {
-    $('#game-won').hide();
-    stats = {
-	enemyHit : 0,
-	killsEnemy : 0,
-	killsWall : 0,
-	wallHit : 0
-    };
-    currentLevel = 0;
-    loadLevel();
+    if(won) {
+    	// stop background music
+	currentBackground.pause();
+	
+    	//reset variables
+	$('#game-won').hide();
+	stats = {
+	    enemyHit : 0,
+	    killsEnemy : 0,
+	    killsWall : 0,
+	    wallHit : 0
+	};
+	currentLevel = 0;
+	won = false;
+	
+	//load new level
+	loadLevel();
+    }
 }
 
 function measureFrameRate() {
@@ -361,7 +373,7 @@ function draw() {
     }
     
     // texts
-    if(currentFrame <= 50 || readyToStart) {
+    if(!won && (currentFrame <= 50 || readyToStart)) {
 	// level X
 	context.font = '60pt Calibri';
 	context.textAlign = 'center';
