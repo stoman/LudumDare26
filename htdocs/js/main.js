@@ -48,7 +48,7 @@ var pointsHistory = 10;
 var colors;
 
 // level
-var currentLevel = 0;
+var currentLevel = 2;
 var levels;
 
 // state
@@ -63,42 +63,94 @@ var stats = {
 };
 
 $(function() {
+    // prepare canvas
+    canvas = document.getElementById('main-canvas');
+    canvas.height = $('#main-canvas').height();
+    canvas.width = $('#main-canvas').width();
+    context = canvas.getContext('2d');
+    
     // create level objects
-    levels = [{// level 1
-	backgroundIndex : 0,
-	enemyAgilityBase : 0.05,
-	enemyAgilityRandom : 0.03,
-	enemySpeedBase : 5,
-	enemySpeedRandom : 1,
-	initialEnemies : 10,
-	penaltyWall : 1,
-	penaltyEnemy : 1,
-	playerAgility : 0.1,
-	playerSpeed : 4,
-	walls : [new Wall(0, 0, 15, 450),// left
-	new Wall(585, 0, 600, 450),// right
-	new Wall(0, 0, 600, 15),// top
-	new Wall(0, 435, 600, 450)// bottom
-	],
-	winFrames : 30
-    }, {// level 2
-	backgroundIndex : 1,
-	enemyAgilityBase : 0.1,
-	enemyAgilityRandom : 0.06,
-	enemySpeedBase : 10,
-	enemySpeedRandom : 2,
-	initialEnemies : 50,
-	penaltyWall : 5,
-	penaltyEnemy : 5,
-	playerAgility : 0.2,
-	playerSpeed : 8,
-	walls : [new Wall(0, 0, 15, 450),// left
-	new Wall(585, 0, 600, 450),// right
-	new Wall(0, 0, 600, 15),// top
-	new Wall(0, 435, 600, 450)// bottom
-	],
-	winFrames : 30
-    }];
+    levels = [
+	    {// level 1
+		backgroundIndex : 0,
+		enemyAgilityBase : 0.01,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 3,
+		enemySpeedRandom : 1,
+		initialEnemies : 5,
+		penaltyWall : 1,
+		penaltyEnemy : 1,
+		playerAgility : 0.1,
+		playerSpeed : 2,
+		text : 'Your enemies can\'t corner sharply, smash them at the walls!',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 30
+	    },
+	    {// level 2
+		backgroundIndex : 1,
+		enemyAgilityBase : 0.04,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 3,
+		enemySpeedRandom : 1,
+		initialEnemies : 50,
+		penaltyWall : 1,
+		penaltyEnemy : 1,
+		playerAgility : 0.1,
+		playerSpeed : 2,
+		text : 'Maybe you can also crash them in the middle...',
+		walls : [
+			new Wall(0, 0, 15, canvas.height),// left
+			new Wall(canvas.width - 15, 0, canvas.width,
+				canvas.height),// right
+			new Wall(0, 0, canvas.width, 15),// top
+			new Wall(0, canvas.height - 15, canvas.width,
+				canvas.height),// bottom
+			new Wall(canvas.width / 3, canvas.height / 3,
+				2 * canvas.width / 3, 2 * canvas.height / 3)// middle
+		],
+		winFrames : 30
+	    },
+	    {// level 3
+		backgroundIndex : 2,
+		enemyAgilityBase : 0.05,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 5,
+		enemySpeedRandom : 1,
+		initialEnemies : 25,
+		penaltyWall : 1,
+		penaltyEnemy : 1,
+		playerAgility : 0.1,
+		playerSpeed : 4,
+		text : 'They learned how to turn their steering wheels! We need to move very close to the walls.',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 30
+	    }, {// level 4
+		backgroundIndex : 3,
+		enemyAgilityBase : 0.1,
+		enemyAgilityRandom : 0.06,
+		enemySpeedBase : 10,
+		enemySpeedRandom : 2,
+		initialEnemies : 50,
+		penaltyWall : 5,
+		penaltyEnemy : 5,
+		playerAgility : 0.2,
+		playerSpeed : 8,
+		text : 'WTF is happening here?',
+		walls : [new Wall(0, 0, 15, 450),// left
+		new Wall(585, 0, 600, 450),// right
+		new Wall(0, 0, 600, 15),// top
+		new Wall(0, 435, 600, 450)// bottom
+		],
+		winFrames : 30
+	    }];
     
     // compute colors
     colors = {
@@ -171,12 +223,6 @@ $(function() {
 	startGame();
     });
     
-    // prepare canvas
-    canvas = document.getElementById('main-canvas');
-    canvas.height = $('#main-canvas').height();
-    canvas.width = $('#main-canvas').width();
-    context = canvas.getContext('2d');
-    
     // load first level
     loadLevel();
     
@@ -236,6 +282,9 @@ function stopLevel() {
 	clearInterval(currentCronjobs[i]);
     }
     currentCronjobs = [];
+    
+    // refresh stats the last time
+    refreshStats();
 }
 
 function nextLevel() {
@@ -274,29 +323,53 @@ function draw() {
     
     // texts
     if(currentFrame <= 50) {
+	// level X
 	context.font = '60pt Calibri';
 	context.textAlign = 'center';
 	context.textBaseline = 'middle';
 	context.lineWidth = 3;
 	context.strokeStyle = colors.headings;
 	context.strokeText('Level ' + (currentLevel + 1), canvas.width / 2,
-		canvas.height / 3);
+		canvas.height / 4);
+	
+	// helpt text
+	context.font = '15pt Calibri';
+	context.fillStyle = colors.headings;
+	var words = levels[currentLevel].text.split(' ');
+	var currentLine = '';
+	var y = canvas.height * 3 / 4;
+	for( var i = 0; i < words.length; i++) {
+	    if(context.measureText(currentLine + ' ' + words[i]).width + 40 < canvas.width) {
+		// attach word to line
+		currentLine += ' ' + words[i];
+	    }
+	    else {
+		// output
+		context.fillText(currentLine, canvas.width / 2, y);
+		y += 20;
+		
+		// create new line
+		currentLine = words[i];
+	    }
+	}
+	// last line
+	context.fillText(currentLine, canvas.width / 2, y);
+	
+	// Ready? Go!
 	if(currentFrame <= 1) {
 	    context.font = '30pt Calibri';
-	    context.fillStyle = colors.headings;
 	    context.fillText('Click to start or press any key.',
-		    canvas.width / 2, canvas.height * 2 / 3);
+		    canvas.width / 2, canvas.height / 2);
 	}
 	else if(currentFrame <= 30) {
 	    context.lineWidth = 4;
 	    context.font = '100pt Calibri';
-	    context.strokeText('Ready?', canvas.width / 2,
-		    canvas.height * 2 / 3);
+	    context.strokeText('Ready?', canvas.width / 2, canvas.height / 2);
 	}
 	else {
 	    context.lineWidth = 5;
 	    context.font = '140pt Calibri';
-	    context.strokeText('Go!', canvas.width / 2, canvas.height * 2 / 3);
+	    context.strokeText('Go!', canvas.width / 2, canvas.height / 2);
 	}
     }
     
