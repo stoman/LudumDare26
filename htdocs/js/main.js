@@ -52,7 +52,7 @@ var currentLevel = 0;
 var levels;
 
 // state
-var readyToStart = false;
+var readyToStart = true;
 
 // stats
 var stats = {
@@ -201,13 +201,24 @@ $(function() {
 	    g : 200,
 	    b : 255
 	}, 10),
-	wall : 'rgb(200, 200, 200)',
-	headings : 'rgb(255, 255, 255)'
+	wall : 'rgb(255, 255, 255)',
+	headings : 'rgb(255, 255, 255)',
+	background : 'rgb(0, 0, 0)'
     };
     
     // add listeners
     $(document).keydown(function(e) {
-	startGame();
+	// start game with space
+	if(e.keyCode == 32) {
+	    startGame();
+	}
+	
+	//pause
+	if(e.keyCode == 80) {
+	    stopGame();
+	}
+	
+	// collect pressed keys
 	if(-1 == $.inArray(e.keyCode, keysPressed)) {
 	    keysPressed.push(e.keyCode);
 	}
@@ -253,9 +264,6 @@ function loadLevel() {
     // play background music
     currentBackground = playBackgroundMusic(levels[currentLevel].backgroundIndex);
     
-    // mark as ready
-    readyToStart = true;
-    
     // draw first frame
     draw();
 }
@@ -264,28 +272,40 @@ function startGame() {
     if(readyToStart) {
 	// add cronjobs
 	currentCronjobs.push(setInterval(draw, 30));
-	setTimeout(function() {
-	    currentCronjobs.push(setInterval(update, 30));
-	}, 1500);
+	currentCronjobs.push(setInterval(update, 30));
 	currentCronjobs.push(setInterval(measureFrameRate, 1000));
 	currentCronjobs.push(setInterval(refreshStats, 1000));
 	readyToStart = false;
     }
+    
+    // show/hide links
+    $('#start-game').hide();
+    $('#stop-game').show();
 }
 
-function stopLevel() {
-    // stop background music
-    currentBackground.pause();
-    
+function stopGame() {
     // stop cronjobs
     for( var i = 0; i < currentCronjobs.length; i++) {
 	clearInterval(currentCronjobs[i]);
     }
     currentCronjobs = [];
+    
+    // adjust variables
+    readyToStart = true;
+    
+    //redraw
+    draw();
+    
+    // show/hide links
+    $('#start-game').show();
+    $('#stop-game').hide();
 }
 
 function nextLevel() {
     if(currentLevel < levels.length - 1) {
+	// stop background music
+	currentBackground.pause();
+	
 	// load next level
 	currentLevel++;
 	loadLevel();
@@ -341,7 +361,7 @@ function draw() {
     }
     
     // texts
-    if(currentFrame <= 50) {
+    if(currentFrame <= 50 || readyToStart) {
 	// level X
 	context.font = '60pt Calibri';
 	context.textAlign = 'center';
@@ -375,20 +395,28 @@ function draw() {
 	context.fillText(currentLine, canvas.width / 2, y);
 	
 	// Ready? Go!
-	if(currentFrame <= 1) {
-	    context.font = '30pt Calibri';
-	    context.fillText('Click to start or press any key.',
+	if(readyToStart) {
+	    context.strokeStyle = colors.background;
+	    context.lineWidth = 5;
+	    context.font = '25pt Calibri';
+	    context.strokeText('Click to start or press the space key.',
+		    canvas.width / 2, canvas.height / 2);
+	    context.fillText('Click to start or press the space key.',
 		    canvas.width / 2, canvas.height / 2);
 	}
 	else if(currentFrame <= 30) {
-	    context.lineWidth = 4;
+	    context.lineWidth = 6;
 	    context.font = '100pt Calibri';
+	    context.fillStyle = colors.background;
 	    context.strokeText('Ready?', canvas.width / 2, canvas.height / 2);
+	    context.fillText('Ready?', canvas.width / 2, canvas.height / 2);
 	}
 	else {
-	    context.lineWidth = 5;
+	    context.lineWidth = 7;
 	    context.font = '140pt Calibri';
+	    context.fillStyle = colors.background;
 	    context.strokeText('Go!', canvas.width / 2, canvas.height / 2);
+	    context.fillText('Go!', canvas.width / 2, canvas.height / 2);
 	}
     }
     
@@ -403,6 +431,11 @@ function draw() {
 }
 
 function update() {
+    // Ready? Go!
+    if(currentFrame <= 50) {
+	return;
+    }
+    
     // update positions
     player.updatePosition();
     for( var i = 0; i < enemies.length; i++) {
@@ -532,7 +565,7 @@ function update() {
     
     // won?
     if(framesNoEnemy >= levels[currentLevel].winFrames) {
-	stopLevel();
+	stopGame();
 	nextLevel();
     }
 }
@@ -644,6 +677,7 @@ function randomPosition(collisionRadius) {
 }
 
 function refreshStats() {
+    // variables from stats array
     for( var name in stats) {
 	if($('#' + name).html() != stats[name]) {
 	    $('#' + name).hide().html(stats[name]).show('slide', {
@@ -651,12 +685,35 @@ function refreshStats() {
 	    }, 200);
 	}
     }
+    
+    // count enemies
+    if($('#enemies').html() != enemies.length) {
+	$('#enemies').hide().html(enemies.length).show('slide', {
+	    direction : 'down'
+	}, 200);
+    }
+    
+    // current level
     if($('#level').html() != currentLevel + 1) {
 	$('#level').hide().html(currentLevel + 1).show('slide', {
 	    direction : 'down'
 	}, 200);
+	if(currentLevel == 0) {
+	    $('#level-description').html('st level');
+	}
+	else if(currentLevel == 1) {
+	    $('#level-description').html('nd level');
+	}
+	else if(currentLevel == 2) {
+	    $('#level-description').html('rd level');
+	}
+	else {
+	    $('#level-description').html('th level');
+	}
     }
-    $('#hits').html(stats.enemyHit+stats.wallHit);
+    
+    // hits (game-won screen)
+    $('#hits').html(stats.enemyHit + stats.wallHit);
 }
 
 // //////////////////////////////////////////////////////////////////////

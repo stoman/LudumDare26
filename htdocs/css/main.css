@@ -34,9 +34,17 @@ h1 {
 	z-index: 2;
 	text-align: center;
 }
-#hits {
+#hits, #stats td {
 	font-weight: bold;
-	font-size: x-large;
+	font-size: xx-large;
+	text-align: center;
+	width: 70px;
+}
+#stats th {
+	font-weight: normal;
+	font-size: medium;
+	vertical-align: middle;
+	text-align: left;
 }
 #sidebar {
 	position: absolute;

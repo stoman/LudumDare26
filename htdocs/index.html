@@ -25,30 +25,34 @@
 					onclick="restartGame(); return false;">try it</a>!
 			</p>
 		</div>
-		
+
 		<canvas id="main-canvas"></canvas>
-		
+
 		<div id="sidebar">
 			<table id="stats">
 				<tr>
-					<td>Level:</td>
 					<td id="level">1</td>
+					<th id="level-description">st level</th>
 				</tr>
 				<tr>
-					<td>Enemies crashed at walls:</td>
 					<td id="killsWall">0</td>
+					<th>enemies crashed at walls</th>
 				</tr>
 				<tr>
-					<td>Enemies killed by collisions:</td>
 					<td id="killsEnemy">0</td>
+					<th>enemies killed by collisions</th>
 				</tr>
 				<tr>
-					<td>Caught by enemies:</td>
+					<td id="enemies">0</td>
+					<th>enemies alive</th>
+				</tr>
+				<tr>
 					<td id="enemyHit">0</td>
+					<th>times caught by enemies</th>
 				</tr>
 				<tr>
-					<td>Crashed at walls:</td>
 					<td id="wallHit">0</td>
+					<th>times crashed at walls</th>
 				</tr>
 			</table>
 
@@ -56,15 +60,20 @@
 				<a href="#" id="mute" onclick="toggleMute(); return false;">Mute</a>
 			</p>
 			<p>
-				Controls: left/right arrow or a/d
+				<a href="#" id="start-game" onclick="startGame(); return false;">Start game</a>
+				<a href="#" id="stop-game" onclick="stopGame(); return false;" style="display: none;">Pause</a>
 			</p>
+			<p>Controls: left/right arrow or a/d</p>
 		</div>
 	</div>
 
 	<h2>About</h2>
 	<p>
 		This is a game created in 48h for <a href="http://www.ludumdare.com/"
-			target="_blank">Ludum Dare</a> 26.
+			target="_blank">Ludum Dare</a> 26. The contest's theme was <a
+			href="http://www.ludumdare.com/compo/ludum-dare-26/" target="_blank"
+			style="font-weight: bold;">Minimalism</a>. That's why the graphics
+		look the way they do.
 	</p>
 	<p>I wrote some blog posts about the creation of the game:</p>
 	<ul>
@@ -75,5 +84,10 @@
 			href="http://www.ludumdare.com/compo/2013/04/28/progress-get-outta-my-way/"
 			target="_blank">28.04.2013: Progress: Get outta my way!</a></li>
 	</ul>
+	<p>
+		The game's source code is available as <a
+			href="https://bitbucket.org/toman/get-outta-my-way" target="_blank">git
+			repository</a>.
+	</p>
 </body>
 </html>
