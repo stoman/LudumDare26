@@ -83,11 +83,30 @@ $(function() {
 		penaltyEnemy : 1,
 		playerAgility : 0.1,
 		playerSpeed : 2,
-		text : 'Your enemies can\'t corner sharply, smash them at the walls!',
+		text : 'You stole a potato from the local supermarket. Fortunately, the guards are not that agile and can\'t corner sharply (Who expects somebody to steal potatoes?). Make them run against a wall to escape and enjoy your tasteful potato!',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
-		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height),// bottom
+		],
+		winFrames : 30
+	    },
+	    {// level 2
+		backgroundIndex : 0,
+		enemyAgilityBase : 0.04,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 3,
+		enemySpeedRandom : 1,
+		initialEnemies : 25,
+		penaltyWall : 1,
+		penaltyEnemy : 1,
+		playerAgility : 0.1,
+		playerSpeed : 2,
+		text : 'You escaped, but now they are warned! Sadly, you stole only one potato and are therefore still hungry. Get some more potatoes this time, but be aware that the guards got better and brought some colleagues. Afterwards you may finish lunch and take a trip down memory lane.',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height),// bottom
 		],
 		winFrames : 30
 	    },
@@ -95,14 +114,14 @@ $(function() {
 		backgroundIndex : 1,
 		enemyAgilityBase : 0.04,
 		enemyAgilityRandom : 0.03,
-		enemySpeedBase : 3,
+		enemySpeedBase : 4,
 		enemySpeedRandom : 1,
 		initialEnemies : 50,
 		penaltyWall : 1,
 		penaltyEnemy : 1,
 		playerAgility : 0.1,
 		playerSpeed : 2,
-		text : 'Maybe you can also crash them in the middle...',
+		text : 'You have always been stealing. Long time ago you began shoplifting lollipops. The guards were faster, but there were also some buildings around. The corners saved you more than just once...',
 		walls : [
 			new Wall(0, 0, 15, canvas.height),// left
 			new Wall(canvas.width - 15, 0, canvas.width,
@@ -112,6 +131,44 @@ $(function() {
 				canvas.height),// bottom
 			new Wall(canvas.width / 3, canvas.height / 3,
 				2 * canvas.width / 3, 2 * canvas.height / 3)// middle
+		],
+		winFrames : 30
+	    },
+	    {// level 2
+		backgroundIndex : 1,
+		enemyAgilityBase : 0.04,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 4,
+		enemySpeedRandom : 1,
+		initialEnemies : 100,
+		penaltyWall : 1,
+		penaltyEnemy : 1,
+		playerAgility : 0.1,
+		playerSpeed : 3,
+		text : 'You got better over time and began to look for more expensive things. Once you stole a laptop from some nerds. They were hard working as under time pressure. Don\'t know what the abbreviation on their screen meant...',
+		walls : [
+			new Wall(0, 0, 15, canvas.height),// left
+			new Wall(canvas.width - 15, 0, canvas.width,
+				canvas.height),// right
+			new Wall(0, 0, canvas.width, 15),// top
+			new Wall(0, canvas.height - 15, canvas.width,
+				canvas.height),// bottom
+			new Wall(125, 175, 145, 275),// L1 (left)
+			new Wall(125, 255, 195, 275),// L2 (bottom)
+			new Wall(215, 175, 235, 275),// D1 (left)
+			new Wall(215, 255, 285, 275),// D2 (bottom)
+			new Wall(265, 175, 285, 275),// D3 (right)
+			new Wall(215, 175, 285, 195),// D4 (top)
+			new Wall(315, 215, 335, 275),// 21 (left)
+			new Wall(315, 255, 385, 275),// 22 (bottom)
+			new Wall(365, 175, 385, 235),// 23 (right)
+			new Wall(315, 175, 385, 195),// 24 (top)
+			new Wall(315, 215, 385, 235),// 25 (middle)
+			new Wall(405, 175, 425, 275),// 21 (left)
+			new Wall(405, 255, 475, 275),// 22 (bottom)
+			new Wall(455, 215, 475, 275),// 23 (right)
+			new Wall(405, 175, 475, 195),// 24 (top)
+			new Wall(405, 215, 475, 235),// 25 (middle)
 		],
 		winFrames : 30
 	    },
@@ -126,7 +183,7 @@ $(function() {
 		penaltyEnemy : 1,
 		playerAgility : 0.1,
 		playerSpeed : 4,
-		text : 'They learned how to turn their steering wheels! We need to move very close to the walls.',
+		text : '[add text] They learned how to turn their steering wheels! We need to move very close to the walls.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
@@ -269,9 +326,9 @@ function loadLevel() {
 
 function startGame() {
     if(readyToStart && !won) {
-    	//hide instructions
-    	hideInstructions();
-    
+	// hide instructions
+	hideInstructions();
+	
 	// add cronjobs
 	currentCronjobs.push(setInterval(draw, 30));
 	currentCronjobs.push(setInterval(update, 30));
@@ -345,7 +402,7 @@ function restartGame() {
 	// load new level
 	loadLevel();
 	
-	//refresh stats
+	// refresh stats
 	refreshStats();
     }
 }
