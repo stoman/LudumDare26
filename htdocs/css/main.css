@@ -5,9 +5,10 @@
 .muted {
 	font-weight: bold;	
 }
-body {
+body, a {
 	background-color: rgb(0, 0, 0);
 	font-family: 'Calibri';
+	color: rgb(255, 255, 255);
 }
 #stats {
 	color: rgb(255, 255, 255);

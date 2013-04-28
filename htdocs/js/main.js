@@ -48,7 +48,7 @@ var pointsHistory = 10;
 var colors;
 
 // level
-var currentLevel = 2;
+var currentLevel = 0;
 var levels;
 
 // state
