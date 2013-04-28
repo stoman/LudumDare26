@@ -17,9 +17,7 @@
 
 	<div id="main">
 		<div id="instructions">
-			<h2>Welcome!</h2>
-			<p>Text...bla...bla</p>
-			<p class="play"><a href="#" onclick="hideInstructions(); return false;">Play</a></p>
+			<a href="#" onclick="hideInstructions(); return false;"><img src="img/instructions.png" /></a>
 		</div>
 
 		<div id="game-won" style="display: none;">
@@ -28,8 +26,10 @@
 			<p>
 				You got hit <span id="hits">0</span> times during your escape. Can
 				you do better? If you think so, <a href="#"
-					onclick="restartGame(); return false;">try it</a>!
+					onclick="restartGame(); return false;">try it</a>.
 			</p>
+			<p class="play"><a href="#"
+					onclick="restartGame(); return false;">Play again!</a></p>
 		</div>
 
 		<canvas id="main-canvas"></canvas>

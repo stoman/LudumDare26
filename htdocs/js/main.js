@@ -344,6 +344,9 @@ function restartGame() {
 	
 	// load new level
 	loadLevel();
+	
+	//refresh stats
+	refreshStats();
     }
 }
 
