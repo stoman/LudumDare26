@@ -17,19 +17,34 @@
 
 	<div id="main">
 		<div id="instructions">
-			<a href="#" onclick="hideInstructions(); return false;"><img src="img/instructions.png" /></a>
+			<a href="#" onclick="hideInstructions(); return false;"><img
+				src="img/instructions.png" /></a>
 		</div>
 
 		<div id="game-won" style="display: none;">
 			<h2>You won the game!</h2>
-			<p>Text...bla...bla</p>
+			<p>Thanks for playing. I hope you enjoyed escaping these nasty
+				blue guys as much as I enjoyed writing it.</p>
+			<p>
+				This game was created in 48 hours for <a
+					href="http://www.ludumdare.com/" target="_blank">Ludum Dare</a> 26.
+				Everything was written from scratch, only the sounds were created
+				with the tools <a href="http://www.drpetter.se/project_sfxr.html"
+					target="_blank">SFXR</a> by Tomas Pettersson and <a
+					href="https://github.com/wibblymat/ld24/blob/master/autotracker.py"
+					target="_blank">Autotracker</a> by Mat Scales.
+			</p>
+			<p>I would be glad to get your feedback on this game. Please
+				consider writing some comments and rating it at the Ludum Dare
+				website. Thank you!</p>
 			<p>
 				You got hit <span id="hits">0</span> times during your escape. Can
 				you do better? If you think so, <a href="#"
 					onclick="restartGame(); return false;">try it</a>.
 			</p>
-			<p class="play"><a href="#"
-					onclick="restartGame(); return false;">Play again!</a></p>
+			<p class="play">
+				<a href="#" onclick="restartGame(); return false;">Play again!</a>
+			</p>
 		</div>
 
 		<canvas id="main-canvas"></canvas>
@@ -63,43 +78,47 @@
 			</table>
 
 			<p>
-				<a href="#" id="mute" onclick="toggleMute(); return false;" class="mute">Mute</a>
+				<a href="#" id="mute" onclick="toggleMute(); return false;"
+					class="mute">Mute</a>
 			</p>
 			<p>
-				<a href="#" id="start-game" onclick="startGame(); return false;">Start game</a>
-				<a href="#" id="stop-game" onclick="stopGame(); return false;" style="display: none;">Pause</a>
+				<a href="#" id="start-game" onclick="startGame(); return false;">Start
+					game</a> <a href="#" id="stop-game" onclick="stopGame(); return false;"
+					style="display: none;">Pause</a>
 			</p>
 			<p>
-				<a href="#" id="show-instructions" onclick="showInstructions(); return false;" style="display: none;">Show instructions</a>
-				<a href="#" id="hide-instructions" onclick="hideInstructions(); return false;">Hide Instructions</a>
+				<a href="#" id="show-instructions"
+					onclick="showInstructions(); return false;" style="display: none;">Show
+					instructions</a> <a href="#" id="hide-instructions"
+					onclick="hideInstructions(); return false;">Hide Instructions</a>
 			</p>
-			<p>
-				Controls: left/right arrow or a/d, p to pause
-			</p>
+			<p>Controls: left/right arrow or a/d, p to pause</p>
 		</div>
 	</div>
 
-	<h2>About</h2>
-	<p>
-		This is a game created in 48h for <a href="http://www.ludumdare.com/"
-			target="_blank">Ludum Dare</a> 26. The contest's theme was <a
-			href="http://www.ludumdare.com/compo/ludum-dare-26/" target="_blank"
-			style="font-weight: bold;">Minimalism</a>. That's why the graphics
-		look the way they do.
-	</p>
-	<p>I wrote some blog posts about the creation of the game:</p>
-	<ul>
-		<li><a
-			href="http://www.ludumdare.com/compo/2013/04/27/im-in-too-37/"
-			target="_blank">27.04.2013: I'm in, too</a></li>
-		<li><a
-			href="http://www.ludumdare.com/compo/2013/04/28/progress-get-outta-my-way/"
-			target="_blank">28.04.2013: Progress: Get outta my way!</a></li>
-	</ul>
-	<p>
-		The game's source code is available as <a
-			href="https://bitbucket.org/toman/get-outta-my-way" target="_blank">git
-			repository</a>.
-	</p>
+	<div id="about">
+		<h2>About The Game</h2>
+		<p>
+			This is a game created in 48h for <a href="http://www.ludumdare.com/"
+				target="_blank">Ludum Dare</a> 26. The contest's theme was <a
+				href="http://www.ludumdare.com/compo/ludum-dare-26/" target="_blank"
+				style="font-weight: bold;">Minimalism</a>. That's why the graphics
+			look the way they do.
+		</p>
+		<p>I wrote some blog posts about the creation of the game:</p>
+		<ul>
+			<li><a
+				href="http://www.ludumdare.com/compo/2013/04/27/im-in-too-37/"
+				target="_blank">27.04.2013: I'm in, too</a></li>
+			<li><a
+				href="http://www.ludumdare.com/compo/2013/04/28/progress-get-outta-my-way/"
+				target="_blank">28.04.2013: Progress: Get outta my way!</a></li>
+		</ul>
+		<p>
+			The game's source code is available as <a
+				href="https://bitbucket.org/toman/get-outta-my-way" target="_blank">git
+				repository</a>.
+		</p>
+	</div>
 </body>
 </html>

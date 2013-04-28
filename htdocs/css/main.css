@@ -50,6 +50,10 @@ h1 {
 	background-color: rgb(0, 0, 0);
 }
 
+#game-won p {
+	text-align: left;
+}
+
 #game-won p.play {
 	text-align: center;
 	font-size: 60pt;
@@ -83,6 +87,11 @@ h1 {
 	width: 300px;
 	z-index: 2;
 	text-align: left;
+}
+
+/* about */
+#about {
+	margin-top: 100px;
 }
 
 /* controls */
