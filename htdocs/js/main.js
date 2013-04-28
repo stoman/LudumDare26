@@ -49,7 +49,7 @@ var pointsHistory = 10;
 var colors;
 
 // level
-var currentLevel = 10;
+var currentLevel = 0;
 var levels;
 var won = false;
 
@@ -422,7 +422,6 @@ $(function() {
     for( var i = 1; i < 50; i++) {
 	tx = ((5 * i + (123 * tx)) % (canvas.width - 45)) + 15;
 	ty = ((7 * i + (177 * ty)) % (canvas.height - 45)) + 15;
-	console.log(ty);
 	levels[9].walls.push(new Wall(tx, ty, tx + 15, ty + 15));
     }
     
@@ -500,6 +499,11 @@ $(function() {
 	// pause
 	if(e.keyCode == 80) {
 	    stopGame();
+	}
+	
+	// mute
+	if(e.keyCode == 77) {
+	    toggleMute();
 	}
 	
 	// collect pressed keys
@@ -686,17 +690,24 @@ function draw() {
 	
 	// helpt text
 	context.font = '15pt Calibri';
-	context.fillStyle = colors.headings;
 	var words = levels[currentLevel].text.split(' ');
 	var currentLine = '';
 	var y = canvas.height * 3 / 4;
 	for( var i = 0; i < words.length; i++) {
-	    if(context.measureText(currentLine + ' ' + words[i]).width + 40 < canvas.width) {
+	    var width = context.measureText(currentLine + ' ' + words[i]).width;
+	    if(width + 40 < canvas.width) {
 		// attach word to line
 		currentLine += ' ' + words[i];
 	    }
 	    else {
+		width = context.measureText(currentLine).width;
 		// output
+		context.beginPath();
+		context.rect(canvas.width / 2 - width / 2, y - 10, width, 20);
+		context.closePath();
+		context.fillStyle = colors.background;
+		context.fill();
+		context.fillStyle = colors.headings;
 		context.fillText(currentLine, canvas.width / 2, y);
 		y += 20;
 		
@@ -705,6 +716,13 @@ function draw() {
 	    }
 	}
 	// last line
+	var width = context.measureText(currentLine).width;
+	context.beginPath();
+	context.rect(canvas.width / 2 - width / 2, y - 10, width, 20);
+	context.closePath();
+	context.fillStyle = colors.background;
+	context.fill();
+	context.fillStyle = colors.headings;
 	context.fillText(currentLine, canvas.width / 2, y);
 	
 	// Ready? Go!
