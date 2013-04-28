@@ -269,6 +269,9 @@ function loadLevel() {
 
 function startGame() {
     if(readyToStart && !won) {
+    	//hide instructions
+    	hideInstructions();
+    
 	// add cronjobs
 	currentCronjobs.push(setInterval(draw, 30));
 	currentCronjobs.push(setInterval(update, 30));
@@ -281,7 +284,8 @@ function startGame() {
 	$('#stop-game').show();
     }
     else if(won) {
-    restartGame();}
+	restartGame();
+    }
 }
 
 function stopGame() {
@@ -324,10 +328,10 @@ function nextLevel() {
 
 function restartGame() {
     if(won) {
-    	// stop background music
+	// stop background music
 	currentBackground.pause();
 	
-    	//reset variables
+	// reset variables
 	$('#game-won').hide();
 	stats = {
 	    enemyHit : 0,
@@ -338,7 +342,7 @@ function restartGame() {
 	currentLevel = 0;
 	won = false;
 	
-	//load new level
+	// load new level
 	loadLevel();
     }
 }
@@ -582,6 +586,22 @@ function update() {
     }
 }
 
+function hideInstructions() {
+    $('#instructions').hide();
+    $('#show-instructions').show();
+    $('#hide-instructions').hide();
+}
+
+function showInstructions() {
+    // stop game
+    stopGame();
+    
+    // show controls
+    $('#instructions').show();
+    $('#show-instructions').hide();
+    $('#hide-instructions').show();
+}
+
 function playSound(name) {
     if(!muted) {
 	sounds[name][soundIndex[name]].play();
@@ -602,7 +622,7 @@ function mute() {
     if(currentBackground != undefined) {
 	currentBackground.pause();
     }
-    $('#mute').html('Unmute').addClass('muted');
+    $('#mute').html('Unmute').addClass('muted').removeClass('mute');
 }
 
 function unmute() {
@@ -610,7 +630,7 @@ function unmute() {
     if(currentBackground != undefined) {
 	currentBackground.play();
     }
-    $('#mute').html('Mute').removeClass('muted');
+    $('#mute').html('Mute').removeClass('muted').addClass('mute');
 }
 
 function toggleMute() {

@@ -16,6 +16,12 @@
 	<h1>Get outta my way!</h1>
 
 	<div id="main">
+		<div id="instructions">
+			<h2>Welcome!</h2>
+			<p>Text...bla...bla</p>
+			<p class="play"><a href="#" onclick="hideInstructions(); return false;">Play</a></p>
+		</div>
+
 		<div id="game-won" style="display: none;">
 			<h2>You won the game!</h2>
 			<p>Text...bla...bla</p>
@@ -57,11 +63,15 @@
 			</table>
 
 			<p>
-				<a href="#" id="mute" onclick="toggleMute(); return false;">Mute</a>
+				<a href="#" id="mute" onclick="toggleMute(); return false;" class="mute">Mute</a>
 			</p>
 			<p>
 				<a href="#" id="start-game" onclick="startGame(); return false;">Start game</a>
 				<a href="#" id="stop-game" onclick="stopGame(); return false;" style="display: none;">Pause</a>
+			</p>
+			<p>
+				<a href="#" id="show-instructions" onclick="showInstructions(); return false;" style="display: none;">Show instructions</a>
+				<a href="#" id="hide-instructions" onclick="hideInstructions(); return false;">Hide Instructions</a>
 			</p>
 			<p>
 				Controls: left/right arrow or a/d, p to pause
