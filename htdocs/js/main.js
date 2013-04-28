@@ -45,23 +45,7 @@ var currentCronjobs = [];
 
 // visuals and colors
 var pointsHistory = 10;
-var colors = {
-    player : '#339033',
-    playerHistory : ['#eef8ee', '#eeecee', '#dde8dd', '#ddecdd', '#cce8cc',
-	    '#ccdccc', '#bbd8bb', '#bbdcbb', '#aad8aa'],
-    enemy : '#333390',
-    enemyHistory : ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff',
-	    '#eeeef8', '#dddde8', '#cccce8', '#bbbbd8', '#aaaad8'],
-    debug : '#000000',
-    explosion : ['#ffeeee', '#f8dddd', '#eecccc', '#e8bbbb', '#ddaaaa',
-	    '#d79999', '#cc8888', '#c77777', '#bb6666', '#b65555', '#aa4444',
-	    '#a63333', '#992222', '#951111', '#880000', '#850000'],
-    birth : ['#eeffff', '#ddf8f8', '#cceeee', '#bbe8e8', '#aadddd', '#99d7d7',
-	    '#88cccc', '#77c7c7', '#66bbbb', '#55b6b6', '#44aaaa', '#33a6a6',
-	    '#229999', '#119595', '#008888', '#008585'],
-    wall : '#c0c0c0',
-    headings : '#303030'
-};
+var colors;
 
 // level
 var currentLevel = 0;
@@ -116,6 +100,59 @@ $(function() {
 	winFrames : 30
     }];
     
+    // compute colors
+    colors = {
+	player : 'rgb(200, 255, 200)',
+	playerHistory : getGradient({
+	    r : 0,
+	    g : 0,
+	    b : 0
+	}, {
+	    r : 100,
+	    g : 200,
+	    b : 100
+	}, 10),
+	enemy : 'rgb(50, 150, 255)',
+	enemyHistory : getGradient({
+	    r : 0,
+	    g : 0,
+	    b : 0
+	}, {
+	    r : 0,
+	    g : 0,
+	    b : 00
+	}, 5).concat(getGradient({
+	    r : 0,
+	    g : 0,
+	    b : 0
+	}, {
+	    r : 45,
+	    g : 135,
+	    b : 230
+	}, 5)),
+	debug : 'rgb(255, 255, 255)',
+	explosion : getGradient({
+	    r : 255,
+	    g : 0,
+	    b : 0
+	}, {
+	    r : 255,
+	    g : 255,
+	    b : 0
+	}, 10),
+	birth : getGradient({
+	    r : 0,
+	    g : 0,
+	    b : 255
+	}, {
+	    r : 0,
+	    g : 200,
+	    b : 255
+	}, 10),
+	wall : 'rgb(200, 200, 200)',
+	headings : 'rgb(255, 255, 255)'
+    };
+    
     // add listeners
     $(document).keydown(function(e) {
 	startGame();
@@ -143,8 +180,7 @@ $(function() {
     // load first level
     loadLevel();
     
-    // stats
-    refreshStats();
+    mute();
 });
 
 function loadLevel() {
@@ -186,6 +222,7 @@ function startGame() {
 	    currentCronjobs.push(setInterval(update, 30));
 	}, 1500);
 	currentCronjobs.push(setInterval(measureFrameRate, 1000));
+	currentCronjobs.push(setInterval(refreshStats, 1000));
 	readyToStart = false;
     }
 }
@@ -268,9 +305,9 @@ function draw() {
     context.textAlign = 'left';
     context.textBaseline = 'top';
     context.fillStyle = colors.debug;
-    context.fillText('fps: ' + frameRate, 10, 10);
-    context.fillText('keysPressed: [' + keysPressed + ']', 10, 20);
-    context.fillText('enemies: ' + enemies.length, 10, 30);
+    context.fillText('fps: ' + frameRate, 20, 20);
+    context.fillText('keysPressed: [' + keysPressed + ']', 20, 30);
+    context.fillText('enemies: ' + enemies.length, 20, 40);
 }
 
 function update() {
@@ -301,7 +338,6 @@ function update() {
 	if(enemies[i].collidesWith(player)) {
 	    // stats
 	    stats.enemyHit++;
-	    refreshStats();
 	    // play sound
 	    playSound('player_hit');
 	    // remove enemy
@@ -316,7 +352,6 @@ function update() {
 	if(levels[currentLevel].walls[i].collidesWith(player)) {
 	    // stats
 	    stats.wallHit++;
-	    refreshStats();
 	    // play sound
 	    playSound('player_hit');
 	    // add explosion
@@ -369,9 +404,6 @@ function update() {
     
     // remove dead enemies
     if(deadEnemies.length > 0) {
-	// stats
-	refreshStats();
-	
 	// play sound
 	playSound('enemy_kill');
 	
@@ -461,6 +493,22 @@ function normalizeAngle(a) {
     return a;
 }
 
+function getGradient(start, end, size) {
+    ret = [];
+    for( var i = 0; i < size; i++) {
+	ret.push('rgb('
+		+ Math.round((start.r * (size - 1 - i) + end.r * i)
+			/ (size - 1))
+		+ ','
+		+ Math.round((start.g * (size - 1 - i) + end.g * i)
+			/ (size - 1))
+		+ ','
+		+ Math.round((start.b * (size - 1 - i) + end.b * i)
+			/ (size - 1)) + ')');
+    }
+    return ret;
+}
+
 function addEnemies(n, showHighlight) {
     for( var i = 0; i < n; i++) {
 	addEnemy(showHighlight);
@@ -505,9 +553,17 @@ function randomPosition(collisionRadius) {
 
 function refreshStats() {
     for( var name in stats) {
-	$('#' + name).html(stats[name]);
+	if($('#' + name).html() != stats[name]) {
+	    $('#' + name).hide().html(stats[name]).show('slide', {
+		direction : 'down'
+	    }, 200);
+	}
     }
-    $('#level').html(currentLevel + 1);
+    if($('#level').html() != currentLevel + 1) {
+	$('#level').hide().html(currentLevel + 1).show('slide', {
+	    direction : 'down'
+	}, 200);
+    }
 }
 
 // //////////////////////////////////////////////////////////////////////
@@ -558,8 +614,7 @@ function Explosion(x, y) {
     // render the object
     this.render = function() {
 	context.beginPath();
-	context.arc(this.x, this.y, Math.ceil((this.step + 1) / 3), 0,
-		2 * Math.PI, false);
+	context.arc(this.x, this.y, this.step + 1, 0, 2 * Math.PI, false);
 	context.closePath();
 	context.fillStyle = colors.explosion[this.step];
 	context.fill();
@@ -571,8 +626,7 @@ function Birth(x, y) {
     
     this.render = function() {
 	context.beginPath();
-	context.arc(this.x, this.y, Math.ceil((this.step + 1) / 3), 0,
-		2 * Math.PI, false);
+	context.arc(this.x, this.y, this.step + 1, 0, 2 * Math.PI, false);
 	context.closePath();
 	context.fillStyle = colors.birth[this.step];
 	context.fill();

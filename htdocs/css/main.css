@@ -5,3 +5,9 @@
 .muted {
 	font-weight: bold;	
 }
+body {
+	background-color: rgb(0, 0, 0);
+}
+#stats {
+	color: rgb(255, 255, 255);
+}

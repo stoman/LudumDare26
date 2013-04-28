@@ -3,8 +3,10 @@
 	<head>
 		<meta charset="ISO-8859-1">
 		<title>LD26</title>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
 		<link rel="stylesheet" href="css/main.css" />
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 	</head>
 	<body>
@@ -14,23 +16,23 @@
 		<table id="stats">
 			<tr>
 				<td>Level:</td>
-				<td id="level"></td>
+				<td id="level">1</td>
 			</tr>
 			<tr>
 				<td>Enemies crashed at walls:</td>
-				<td id="killsWall"></td>
+				<td id="killsWall">0</td>
 			</tr>
 			<tr>
 				<td>Enemies killed by collisions:</td>
-				<td id="killsEnemy"></td>
+				<td id="killsEnemy">0</td>
 			</tr>
 			<tr>
 				<td>Caught by enemies:</td>
-				<td id="enemyHit"></td>
+				<td id="enemyHit">0</td>
 			</tr>
 			<tr>
 				<td>Crashed at walls:</td>
-				<td id="wallHit"></td>
+				<td id="wallHit">0</td>
 			</tr>
 		</table>
 	</body>
