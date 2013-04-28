@@ -92,7 +92,7 @@ $(function() {
 		winFrames : 30
 	    },
 	    {// level 2
-		backgroundIndex : 0,
+		backgroundIndex : 1,
 		enemyAgilityBase : 0.04,
 		enemyAgilityRandom : 0.03,
 		enemySpeedBase : 3,
@@ -110,8 +110,8 @@ $(function() {
 		],
 		winFrames : 30
 	    },
-	    {// level 2
-		backgroundIndex : 1,
+	    {// level 3
+		backgroundIndex : 2,
 		enemyAgilityBase : 0.04,
 		enemyAgilityRandom : 0.03,
 		enemySpeedBase : 4,
@@ -134,8 +134,8 @@ $(function() {
 		],
 		winFrames : 30
 	    },
-	    {// level 2
-		backgroundIndex : 1,
+	    {// level 4
+		backgroundIndex : 3,
 		enemyAgilityBase : 0.04,
 		enemyAgilityRandom : 0.03,
 		enemySpeedBase : 4,
@@ -146,44 +146,77 @@ $(function() {
 		playerAgility : 0.1,
 		playerSpeed : 3,
 		text : 'You got better over time and began to look for more expensive things. Once you stole a laptop from some nerds. They were hard working as under time pressure. Don\'t know what the abbreviation on their screen meant...',
-		walls : [
-			new Wall(0, 0, 15, canvas.height),// left
-			new Wall(canvas.width - 15, 0, canvas.width,
-				canvas.height),// right
-			new Wall(0, 0, canvas.width, 15),// top
-			new Wall(0, canvas.height - 15, canvas.width,
-				canvas.height),// bottom
-			new Wall(125, 175, 145, 275),// L1 (left)
-			new Wall(125, 255, 195, 275),// L2 (bottom)
-			new Wall(215, 175, 235, 275),// D1 (left)
-			new Wall(215, 255, 285, 275),// D2 (bottom)
-			new Wall(265, 175, 285, 275),// D3 (right)
-			new Wall(215, 175, 285, 195),// D4 (top)
-			new Wall(315, 215, 335, 275),// 21 (left)
-			new Wall(315, 255, 385, 275),// 22 (bottom)
-			new Wall(365, 175, 385, 235),// 23 (right)
-			new Wall(315, 175, 385, 195),// 24 (top)
-			new Wall(315, 215, 385, 235),// 25 (middle)
-			new Wall(405, 175, 425, 275),// 21 (left)
-			new Wall(405, 255, 475, 275),// 22 (bottom)
-			new Wall(455, 215, 475, 275),// 23 (right)
-			new Wall(405, 175, 475, 195),// 24 (top)
-			new Wall(405, 215, 475, 235),// 25 (middle)
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height),// bottom
+		new Wall(125, 175, 145, 275),// L1 (left)
+		new Wall(125, 255, 195, 275),// L2 (bottom)
+		new Wall(215, 175, 235, 275),// D1 (left)
+		new Wall(215, 255, 285, 275),// D2 (bottom)
+		new Wall(265, 175, 285, 275),// D3 (right)
+		new Wall(215, 175, 285, 195),// D4 (top)
+		new Wall(315, 215, 335, 275),// 21 (left)
+		new Wall(315, 255, 385, 275),// 22 (bottom)
+		new Wall(365, 175, 385, 235),// 23 (right)
+		new Wall(315, 175, 385, 195),// 24 (top)
+		new Wall(315, 215, 385, 235),// 25 (middle)
+		new Wall(405, 175, 425, 275),// 21 (left)
+		new Wall(405, 255, 475, 275),// 22 (bottom)
+		new Wall(455, 215, 475, 275),// 23 (right)
+		new Wall(405, 175, 475, 195),// 24 (top)
+		new Wall(405, 215, 475, 235),// 25 (middle)
 		],
 		winFrames : 30
 	    },
-	    {// level 3
-		backgroundIndex : 2,
+	    {// level 5
+		backgroundIndex : 0,
 		enemyAgilityBase : 0.05,
 		enemyAgilityRandom : 0.03,
 		enemySpeedBase : 5,
 		enemySpeedRandom : 1,
 		initialEnemies : 25,
-		penaltyWall : 1,
+		penaltyWall : 2,
+		penaltyEnemy : 3,
+		playerAgility : 0.1,
+		playerSpeed : 4,
+		text : 'When they saw you quite often, they knew that reinforcements were needed. Try not to be arrested. I mean, you should always do that, but this time, they will use your mistakes shamelessly.',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 30
+	    }, {// level 6
+		backgroundIndex : 1,
+		enemyAgilityBase : 0.15,
+		enemyAgilityRandom : 0.1,
+		enemySpeedBase : 5,
+		enemySpeedRandom : 1,
+		initialEnemies : 100,
+		penaltyWall : 10,
 		penaltyEnemy : 1,
 		playerAgility : 0.1,
 		playerSpeed : 4,
-		text : '[add text] They learned how to turn their steering wheels! We need to move very close to the walls.',
+		text : 'One day you decided that it may be clever to steal where nobody knows you. It would have been even more clever to know the city before running through it. There are buildings everywhere. Hope the stolen gaming consoles are woth it.',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 30
+	    }, {// level 7
+		backgroundIndex : 2,
+		enemyAgilityBase : 0.07,
+		enemyAgilityRandom : 0.05,
+		enemySpeedBase : 7,
+		enemySpeedRandom : 2,
+		initialEnemies : 100,
+		penaltyWall : 3,
+		penaltyEnemy : 3,
+		playerAgility : 0.15,
+		playerSpeed : 5,
+		text : 'The workout on this stolen treadmill was hard, but now you are much faster. It seems like the policemen used the other one they confiscated, because they got faster, too. Will you get the new couch to your home? You can\'t always steal something to work out... what about a new TV next?',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
@@ -209,6 +242,17 @@ $(function() {
 		],
 		winFrames : 30
 	    }];
+    // level 6
+    for( var x = 30; x < 450; x += 50) {
+	levels[5].walls.push(new Wall(canvas.width / 2 - 7.5, x,
+		canvas.width / 2 + 7.5, x + 15));
+	levels[5].walls.push(new Wall(x, x, x + 15, x + 15));
+	levels[5].walls.push(new Wall(canvas.width - x - 15, x, canvas.width
+		- x, x + 15));
+	levels[5].walls.push(new Wall(x, canvas.height-x-15, x + 15, canvas.height-x));
+	levels[5].walls.push(new Wall(canvas.width - x - 15, canvas.height-x-15, canvas.width
+		- x, canvas.height-x));
+    }
     
     // compute colors
     colors = {
