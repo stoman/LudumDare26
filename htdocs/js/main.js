@@ -5,6 +5,7 @@ var context;
 // game variables
 var player;
 var enemies;
+var passersby;
 var highlights;
 var keysPressed;
 
@@ -48,7 +49,7 @@ var pointsHistory = 10;
 var colors;
 
 // level
-var currentLevel = 0;
+var currentLevel = 7;
 var levels;
 var won = false;
 
@@ -59,7 +60,9 @@ var readyToStart = true;
 var stats = {
     enemyHit : 0,
     killsEnemy : 0,
+    killsPasserby : 0,
     killsWall : 0,
+    passerbyHit : 0,
     wallHit : 0
 };
 
@@ -79,8 +82,14 @@ $(function() {
 		enemySpeedBase : 3,
 		enemySpeedRandom : 1,
 		initialEnemies : 5,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 1,
 		penaltyEnemy : 1,
+		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 2,
 		text : 'You stole a potato from the local supermarket. Fortunately, the guards are not that agile and can\'t corner sharply (Who expects somebody to steal potatoes?). Make them run against a wall to escape and enjoy your tasteful potato!',
@@ -98,8 +107,14 @@ $(function() {
 		enemySpeedBase : 3,
 		enemySpeedRandom : 1,
 		initialEnemies : 25,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 1,
 		penaltyEnemy : 1,
+		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 2,
 		text : 'You escaped, but now they are warned! Sadly, you stole only one potato and are therefore still hungry. Get some more potatoes this time, but be aware that the guards got better and brought some colleagues. Afterwards you may finish lunch and take a trip down memory lane.',
@@ -117,11 +132,17 @@ $(function() {
 		enemySpeedBase : 4,
 		enemySpeedRandom : 1,
 		initialEnemies : 50,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 1,
 		penaltyEnemy : 1,
+		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 2,
-		text : 'You have always been stealing. Long time ago you began shoplifting lollipops. The guards were faster, but there were also some buildings around. The corners saved you more than just once...',
+		text : 'After lunch there is some time to think about the past. You have always been stealing. Long time ago you began shoplifting lollipops. The guards were faster, but there were also some buildings around. The corners saved you more than just once...',
 		walls : [
 			new Wall(0, 0, 15, canvas.height),// left
 			new Wall(canvas.width - 15, 0, canvas.width,
@@ -141,8 +162,14 @@ $(function() {
 		enemySpeedBase : 4,
 		enemySpeedRandom : 1,
 		initialEnemies : 100,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 1,
 		penaltyEnemy : 1,
+		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 3,
 		text : 'You got better over time and began to look for more expensive things. Once you stole a laptop from some nerds. They were hard working as under time pressure. Don\'t know what the abbreviation on their screen meant...',
@@ -176,8 +203,14 @@ $(function() {
 		enemySpeedBase : 5,
 		enemySpeedRandom : 1,
 		initialEnemies : 25,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 2,
 		penaltyEnemy : 3,
+		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 4,
 		text : 'When they saw you quite often, they knew that reinforcements were needed. Try not to be arrested. I mean, you should always do that, but this time, they will use your mistakes shamelessly.',
@@ -187,36 +220,99 @@ $(function() {
 		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
 		],
 		winFrames : 30
-	    }, {// level 6
+	    },
+	    {// level 6
 		backgroundIndex : 1,
 		enemyAgilityBase : 0.15,
 		enemyAgilityRandom : 0.1,
 		enemySpeedBase : 5,
 		enemySpeedRandom : 1,
 		initialEnemies : 100,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 10,
 		penaltyEnemy : 1,
+		penaltyPasserby : 1,
 		playerAgility : 0.1,
 		playerSpeed : 4,
-		text : 'One day you decided that it may be clever to steal where nobody knows you. It would have been even more clever to know the city before running through it. There are buildings everywhere. Hope the stolen gaming consoles are woth it.',
+		text : 'One day you decided that it may be clever to steal where nobody knows you. It would have been even more clever to know the city before running through it. There are buildings everywhere. You have to stay alive when you killed all enemies for quite a long time to find your way out here. Hope the stolen gaming consoles are worth it.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
 		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
 		],
-		winFrames : 30
-	    }, {// level 7
+		winFrames : 100
+	    },
+	    {// level 7
 		backgroundIndex : 2,
 		enemyAgilityBase : 0.07,
 		enemyAgilityRandom : 0.05,
 		enemySpeedBase : 7,
 		enemySpeedRandom : 2,
 		initialEnemies : 100,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 3,
 		penaltyEnemy : 3,
+		penaltyPasserby : 1,
 		playerAgility : 0.15,
 		playerSpeed : 5,
-		text : 'The workout on this stolen treadmill was hard, but now you are much faster. It seems like the policemen used the other one they confiscated, because they got faster, too. Will you get the new couch to your home? You can\'t always steal something to work out... what about a new TV next?',
+		text : 'The workout on this stolen treadmill was hard, but now you are much faster. It seems like the policemen used the other one they confiscated, because they got faster, too. Will you get the new couch to your home? You can\'t always steal treadmills... what about a new TV next?',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 30
+	    },
+	    {// level 8
+		backgroundIndex : 3,
+		enemyAgilityBase : 0.05,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 5,
+		enemySpeedRandom : 1,
+		initialEnemies : 25,
+		initialPassersby : 25,
+		passerbyAgilityBase : 0.05,
+		passerbyAgilityRandom : 0.03,
+		passerbySpeedBase : 0,
+		passerbySpeedRandom : 0,
+		penaltyWall : 2,
+		penaltyEnemy : 3,
+		penaltyPasserby : 50,
+		playerAgility : 0.1,
+		playerSpeed : 4,
+		text : 'When shoplifting in pedestrian areas there are many bassersby around. These are the yellow guys. Don\'t need to get rid of them, they are just in your way. In fact, I can\'t recommend hitting them. Cops get really angry when you do this. But you will notice this on your own... Good news: They obstruct your enemies\' way too.',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 30},
+	    {// level 9
+		backgroundIndex : 0,
+		enemyAgilityBase : 0.05,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 4,
+		enemySpeedRandom : 1,
+		initialEnemies : 25,
+		initialPassersby : 25,
+		passerbyAgilityBase : 0.05,
+		passerbyAgilityRandom : 0.03,
+		passerbySpeedBase : 0.5,
+		passerbySpeedRandom : 0.5,
+		penaltyWall : 2,
+		penaltyEnemy : 3,
+		penaltyPasserby : 50,
+		playerAgility : 0.1,
+		playerSpeed : 3,
+		text : 'These passersby are really annoying. All the time they are staring into their smartphones and don\'t look what is going on around them. They just move randomly around... Thankfully, this is no mobile game, as I don\'t want to insult you.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
@@ -230,8 +326,14 @@ $(function() {
 		enemySpeedBase : 10,
 		enemySpeedRandom : 2,
 		initialEnemies : 50,
+		initialPassersby : 0,
+		passerbyAgilityBase : 0.1,
+		passerbyAgilityRandom : 0,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0,
 		penaltyWall : 5,
 		penaltyEnemy : 5,
+		penaltyPasserby : 1,
 		playerAgility : 0.2,
 		playerSpeed : 8,
 		text : 'WTF is happening here?',
@@ -249,9 +351,10 @@ $(function() {
 	levels[5].walls.push(new Wall(x, x, x + 15, x + 15));
 	levels[5].walls.push(new Wall(canvas.width - x - 15, x, canvas.width
 		- x, x + 15));
-	levels[5].walls.push(new Wall(x, canvas.height-x-15, x + 15, canvas.height-x));
-	levels[5].walls.push(new Wall(canvas.width - x - 15, canvas.height-x-15, canvas.width
-		- x, canvas.height-x));
+	levels[5].walls.push(new Wall(x, canvas.height - x - 15, x + 15,
+		canvas.height - x));
+	levels[5].walls.push(new Wall(canvas.width - x - 15, canvas.height - x
+		- 15, canvas.width - x, canvas.height - x));
     }
     
     // compute colors
@@ -274,7 +377,7 @@ $(function() {
 	}, {
 	    r : 0,
 	    g : 0,
-	    b : 00
+	    b : 0
 	}, 5).concat(getGradient({
 	    r : 0,
 	    g : 0,
@@ -284,6 +387,16 @@ $(function() {
 	    g : 135,
 	    b : 230
 	}, 5)),
+	passerby : 'rgb(255, 255, 0)',
+	passerbyHistory : getGradient({
+	    r : 0,
+	    g : 0,
+	    b : 0
+	}, {
+	    r : 200,
+	    g : 200,
+	    b : 0
+	}, 10),
 	debug : 'rgb(255, 255, 255)',
 	explosion : getGradient({
 	    r : 255,
@@ -352,6 +465,7 @@ function loadLevel() {
     // initialize arrays
     enemies = [];
     highlights = [];
+    passersby = [];
     keysPressed = [];
     currentFrame = 0;
     frameRateStart = 0;
@@ -360,6 +474,9 @@ function loadLevel() {
     
     // add enemies
     addEnemies(levels[currentLevel].initialEnemies, false);
+    
+    // add passersby
+    addPassersby(levels[currentLevel].initialPassersby, false);
     
     // play background music
     currentBackground = playBackgroundMusic(levels[currentLevel].backgroundIndex);
@@ -437,7 +554,9 @@ function restartGame() {
 	stats = {
 	    enemyHit : 0,
 	    killsEnemy : 0,
+	    killsPasserby : 0,
 	    killsWall : 0,
+	    passersbyHit : 0,
 	    wallHit : 0
 	};
 	currentLevel = 0;
@@ -470,6 +589,11 @@ function draw() {
     // draw enemies
     for( var i = 0; i < enemies.length; i++) {
 	enemies[i].render();
+    }
+    
+    // draw passersby
+    for( var i = 0; i < passersby.length; i++) {
+	passersby[i].render();
     }
     
     // draw player
@@ -561,6 +685,9 @@ function update() {
     for( var i = 0; i < enemies.length; i++) {
 	enemies[i].updatePosition();
     }
+    for( var i = 0; i < passersby.length; i++) {
+	passersby[i].updatePosition();
+    }
     
     // turn objects
     for( var i = 0; i < enemies.length; i++) {
@@ -610,6 +737,34 @@ function update() {
 	}
     }
     
+    // player vs. passersby
+    for( var i = passersby.length - 1; i >= 0; i--) {
+	if(passersby[i].collidesWith(player)) {
+	    // stats
+	    stats.passerbyHit++;
+	    // play sound
+	    playSound('player_hit');
+	    // add explosion
+	    highlights.push(new Explosion(player.x, player.y));
+	    // add enemies
+	    addEnemies(levels[currentLevel].penaltyPasserby, true);
+	    // remove passerby
+	    passersby.splice(i, 1);
+	}
+    }
+    
+    // passersby vs. wall
+    for( var i = 0; i < levels[currentLevel].walls.length; i++) {
+	for( var j = 0; j < passersby.length; j++) {
+	    if(levels[currentLevel].walls[i].collidesWith(passersby[j])) {
+		// adjust passerby
+		passersby[j].angle += Math.PI;
+		passersby[j].updatePosition();
+		passersby[j].angle = 2 * Math.PI * Math.random();
+	    }
+	}
+    }
+    
     // enemies
     var deadEnemies = [];
     for( var i = 0; i < enemies.length; i++) {
@@ -619,6 +774,19 @@ function update() {
 		if(-1 == $.inArray(i, deadEnemies)) {
 		    // stats
 		    stats.killsWall++;
+		    
+		    // kill enemy
+		    deadEnemies.push(i);
+		}
+	    }
+	}
+	
+	// enemy vs. passerby
+	for( var j = 0; j < passersby.length; j++) {
+	    if(passersby[j].collidesWith(enemies[i])) {
+		if(-1 == $.inArray(i, deadEnemies)) {
+		    // stats
+		    stats.killsPasserby++;
 		    
 		    // kill enemy
 		    deadEnemies.push(i);
@@ -794,6 +962,26 @@ function addEnemy(showHighlight) {
     }
 }
 
+function addPassersby(n) {
+    for( var i = 0; i < n; i++) {
+	addPasserby();
+    }
+}
+
+function addPasserby() {
+    // create random position
+    var pos = randomPosition(10);
+    
+    // create passerby
+    var passerby = new Passerby(pos.x, pos.y, Math.random() * 2 * Math.PI,
+	    levels[currentLevel].passerbySpeedBase
+		    + levels[currentLevel].passerbySpeedRandom * Math.random(),
+	    levels[currentLevel].passerbyAgilityBase
+		    + levels[currentLevel].passerbyAgilityRandom
+		    * Math.random());
+    passersby.push(passerby);
+}
+
 function randomPosition(collisionRadius) {
     // compute position
     var pos = new Position(Math.random() * canvas.width, Math.random()
@@ -849,7 +1037,7 @@ function refreshStats() {
     }
     
     // hits (game-won screen)
-    $('#hits').html(stats.enemyHit + stats.wallHit);
+    $('#hits').html(stats.enemyHit + stats.wallHit + stats.passerbyHit);
 }
 
 // //////////////////////////////////////////////////////////////////////
@@ -983,6 +1171,35 @@ function Enemy(x, y, angle, speed, agility) {
 	context.rect(this.x - 2, this.y - 2, 4, 4);
 	context.closePath();
 	context.fillStyle = colors.enemy;
+	context.fill();
+    };
+}
+
+function Passerby(x, y, angle, speed, agility) {
+    // extend Thing
+    copyObject(this, new Thing(x, y, angle, speed, agility));
+    
+    this.collisionRadius = 5;
+    
+    // render the object
+    this.render = function() {
+	// history
+	for( var i = 0; i < this.xHistory.length; i++) {
+	    context.beginPath();
+	    context.rect(this.xHistory[i] - 5 + (this.xHistory.length - i) / 2,
+		    this.yHistory[i] - 5 + (this.xHistory.length - i) / 2,
+		    10 - (this.xHistory.length - i),
+		    10 - (this.xHistory.length - i) / 2);
+	    context.closePath();
+	    context.fillStyle = colors.passerbyHistory[i];
+	    context.fill();
+	}
+	
+	// object
+	context.beginPath();
+	context.rect(this.x - 5, this.y - 5, 10, 10);
+	context.closePath();
+	context.fillStyle = colors.passerby;
 	context.fill();
     };
 }
