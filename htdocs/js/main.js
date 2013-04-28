@@ -49,7 +49,7 @@ var pointsHistory = 10;
 var colors;
 
 // level
-var currentLevel = 7;
+var currentLevel = 10;
 var levels;
 var won = false;
 
@@ -294,7 +294,8 @@ $(function() {
 		new Wall(0, 0, canvas.width, 15),// top
 		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
 		],
-		winFrames : 30},
+		winFrames : 30
+	    },
 	    {// level 9
 		backgroundIndex : 0,
 		enemyAgilityBase : 0.05,
@@ -312,31 +313,90 @@ $(function() {
 		penaltyPasserby : 50,
 		playerAgility : 0.1,
 		playerSpeed : 3,
-		text : 'These passersby are really annoying. All the time they are staring into their smartphones and don\'t look what is going on around them. They just move randomly around... Thankfully, this is no mobile game, as I don\'t want to insult you.',
+		text : 'Back to modern problems: These passersby are really annoying. All the time they are staring into their smartphones and don\'t look what is going on around them. They just move randomly around... Thankfully, this is no mobile game, as I don\'t want to insult you.',
 		walls : [new Wall(0, 0, 15, canvas.height),// left
 		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
 		new Wall(0, 0, canvas.width, 15),// top
 		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
 		],
 		winFrames : 30
-	    }, {// level 4
+	    },
+	    {// level 10
+		backgroundIndex : 1,
+		enemyAgilityBase : 0.05,
+		enemyAgilityRandom : 0.03,
+		enemySpeedBase : 4,
+		enemySpeedRandom : 1,
+		initialEnemies : 75,
+		initialPassersby : 25,
+		passerbyAgilityBase : 0.15,
+		passerbyAgilityRandom : 0.03,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0.5,
+		penaltyWall : 5,
+		penaltyEnemy : 5,
+		penaltyPasserby : 50,
+		playerAgility : 0.1,
+		playerSpeed : 3,
+		text : 'Who is the architect of this building? Did he think of poor shoplifters trying to escape the police when designing this mall?',
+		walls : [new Wall(0, 0, 15, canvas.height),// left
+		new Wall(canvas.width - 15, 0, canvas.width, canvas.height),// right
+		new Wall(0, 0, canvas.width, 15),// top
+		new Wall(0, canvas.height - 15, canvas.width, canvas.height)// bottom
+		],
+		winFrames : 70
+	    },
+	    {// level 11
+		backgroundIndex : 3,
+		enemyAgilityBase : 0.1,
+		enemyAgilityRandom : 0.1,
+		enemySpeedBase : 8,
+		enemySpeedRandom : 2,
+		initialEnemies : 200,
+		initialPassersby : 15,
+		passerbyAgilityBase : 0.15,
+		passerbyAgilityRandom : 0.03,
+		passerbySpeedBase : 1,
+		passerbySpeedRandom : 0.5,
+		penaltyWall : 10,
+		penaltyEnemy : 10,
+		penaltyPasserby : 50,
+		playerAgility : 0.1,
+		playerSpeed : 6,
+		text : 'This seems to be easier. There are lots of security guys which is normal for an airport. Wait... what should you steal at an airport? An airplane? You can\'t hide this under your coat...',
+		walls : [
+			new Wall(0, 0, 15, canvas.height),// left
+			new Wall(canvas.width - 15, 0, canvas.width,
+				canvas.height),// right
+			new Wall(0, 0, canvas.width, 15),// top
+			new Wall(0, canvas.height - 15, canvas.width,
+				canvas.height),// bottom
+			new Wall(canvas.width / 3, canvas.height / 3,
+				canvas.width / 3 + 15, canvas.height * 2 / 3),// middle1
+			new Wall(canvas.width * 2 / 3, canvas.height / 3,
+				canvas.width * 2 / 3 + 15,
+				canvas.height * 2 / 3),// middle2
+		],
+		winFrames : 30
+	    },
+	    {// level 12
 		backgroundIndex : 3,
 		enemyAgilityBase : 0.1,
 		enemyAgilityRandom : 0.06,
 		enemySpeedBase : 10,
-		enemySpeedRandom : 2,
+		enemySpeedRandom : 3,
 		initialEnemies : 50,
-		initialPassersby : 0,
+		initialPassersby : 20,
 		passerbyAgilityBase : 0.1,
 		passerbyAgilityRandom : 0,
 		passerbySpeedBase : 1,
-		passerbySpeedRandom : 0,
-		penaltyWall : 5,
-		penaltyEnemy : 5,
-		penaltyPasserby : 1,
+		passerbySpeedRandom : 1,
+		penaltyWall : 15,
+		penaltyEnemy : 15,
+		penaltyPasserby : 50,
 		playerAgility : 0.2,
 		playerSpeed : 8,
-		text : 'WTF is happening here?',
+		text : 'WTF is happening here? Can you master this last level?',
 		walls : [new Wall(0, 0, 15, 450),// left
 		new Wall(585, 0, 600, 450),// right
 		new Wall(0, 0, 600, 15),// top
@@ -355,6 +415,15 @@ $(function() {
 		canvas.height - x));
 	levels[5].walls.push(new Wall(canvas.width - x - 15, canvas.height - x
 		- 15, canvas.width - x, canvas.height - x));
+    }
+    // level 10
+    var tx = 50;
+    var ty = 50;
+    for( var i = 1; i < 50; i++) {
+	tx = ((5 * i + (123 * tx)) % (canvas.width - 45)) + 15;
+	ty = ((7 * i + (177 * ty)) % (canvas.height - 45)) + 15;
+	console.log(ty);
+	levels[9].walls.push(new Wall(tx, ty, tx + 15, ty + 15));
     }
     
     // compute colors
