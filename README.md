@@ -1,6 +1,8 @@
 # LD26
 
-This is my submission for the 26th edition of the 48\. game creation contest. Please also find the game's entry at [Ludum Dare](http://www.ludumdare.com/compo/ludum-dare-26/?action=preview&amp;uid=21963). I'm looking forward to read your comments there.
+This is my submission for the 26th edition of the 48h game creation contest. Please also find the game's entry at [Ludum Dare](http://www.ludumdare.com/compo/ludum-dare-26/?action=preview&uid=21963). I'm looking forward to read your comments there.
+
+You can find the game itself at [my website](http://games.stoman.de/ld26/) and a video of it at [youtube](https://www.youtube.com/watch?v=Fezyt88kqHY).
 
 ## Game Description
 
@@ -18,3 +20,4 @@ This is my first entry for Ludum Dare. I had lots of fun creating this game and 
 * Creation Date: 27./28.04.2013
 * Platform: HTML5, JavaScript
 * Author: Stefan Toman
+* Tools used: [SFXR](http://www.drpetter.se/project_sfxr.html) by Tomas Pettersson and [Autotracker](https://github.com/wibblymat/ld24/blob/master/autotracker.py) by Mat Scales
