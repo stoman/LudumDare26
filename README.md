@@ -21,3 +21,7 @@ This is my first entry for Ludum Dare. I had lots of fun creating this game and 
 * Platform: HTML5, JavaScript
 * Author: Stefan Toman
 * Tools used: [SFXR](http://www.drpetter.se/project_sfxr.html) by Tomas Pettersson and [Autotracker](https://github.com/wibblymat/ld24/blob/master/autotracker.py) by Mat Scales
+
+## Licence
+
+This project is published under the MIT license. Feel free to use this template for all your projects.
