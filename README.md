@@ -1,4 +1,4 @@
-# LD26
+# LudumDare26
 
 This is my submission for the 26th edition of the 48h game creation contest. Please also find the game's entry at [Ludum Dare](http://www.ludumdare.com/compo/ludum-dare-26/?action=preview&uid=21963). I'm looking forward to read your comments there.
 
