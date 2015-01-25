@@ -2,7 +2,7 @@
 
 This is my submission for the 26th edition of the 48h game creation contest. Please also find the game's entry at [Ludum Dare](http://www.ludumdare.com/compo/ludum-dare-26/?action=preview&uid=21963). I'm looking forward to read your comments there.
 
-You can find the game itself at [my website](http://games.stoman.de/ld26/) and a video of it at [youtube](https://www.youtube.com/watch?v=Fezyt88kqHY).
+You can find the game itself at [my website](http://games.stoman.de/ludumdare26/) and a video of it at [youtube](https://www.youtube.com/watch?v=Fezyt88kqHY).
 
 ## Game Description
 
